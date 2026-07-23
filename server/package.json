@@ -1,0 +1,25 @@
+{
+  "name": "transit-hub",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [
+    "bus",
+    "location",
+    "tracking"
+  ],
+  "homepage": "https://github.com/devalanjones-boop/transit-hub#readme",
+  "bugs": {
+    "url": "https://github.com/devalanjones-boop/transit-hub/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devalanjones-boop/transit-hub.git"
+  },
+  "license": "ISC",
+  "author": "Alan, Aswin",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
