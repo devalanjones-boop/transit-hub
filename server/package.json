@@ -20,6 +20,22 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "start": "node --watch server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dns": "^0.1.2",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jest": "^30.4.2",
+    "joi": "^18.2.3",
+    "mongoose": "^9.8.1"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.10",
+    "supertest": "^7.2.2",
+    "vitest": "^4.1.10"
   }
 }
