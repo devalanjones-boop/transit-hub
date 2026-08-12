@@ -28,11 +28,15 @@ const EmptyState = ({
                 {message}
             </p>
 
-            <Button onClick={onClick}>
+            {buttonText && onClick && (
 
-                {buttonText}
+                <Button onClick={onClick}>
 
-            </Button>
+                    {buttonText}
+
+                </Button>
+
+            )}
 
         </div>
     )
