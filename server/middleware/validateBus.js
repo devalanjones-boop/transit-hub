@@ -2,6 +2,7 @@ const {
   busValidationSchema,
   updateBusValidationSchema,
 } = require("../validations/busValidation");
+
 const validateBus = (req, res, next) => {
   const { error, value } = busValidationSchema.validate(req.body, {
     abortEarly: false,

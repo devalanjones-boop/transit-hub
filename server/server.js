@@ -12,8 +12,12 @@ let mongodbConnect =require("./config/dbconfig")
 mongodbConnect()
 
 let busRouter = require("./routes/busRoutes")
+let routeRouter = require("./routes/routeRoutes")
+let stopRouter = require("./routes/stopRoute")
 
 app.use("/buses", busRouter)
+app.use("/routes", routeRouter)
+app.use("/stops", stopRouter)
 
 const port = process.env.port
 

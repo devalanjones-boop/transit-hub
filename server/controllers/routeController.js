@@ -1,59 +1,109 @@
-let Route = require("../models/routeModel")
+const routeService = require("../services/routeService")
 
-let createRoute = async (req,res) => {
-try {
-    const { error, value } = routeValidationSchema.validate(req.body, {
-  abortEarly: false,
-  stripUnknown: true,
-});
+let createRoute = async (req, res) => {
+  try {
+    const route = await routeService.createRoute(req.body);
 
-if (error) {
-  return res.status(400).json({
-    success: false,
-    errors: error.details.map((err) => err.message),
-  });
-}
-
-let route = await Route.create(value)
-return res.status(201).json({
-    success: true,
-    message: "Route created successfully"
-})    
-} catch (error) {
+    return res.status(201).json({
+      success: true,
+      message: "Route created successfully",
+    });
+  } catch (error) {
     res.status(500).json({
-        success:false,
-        message:error.message
-    })
-}
-}
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
-let getAllRoutes = async (req,res) => {
-    try {
-        let routes = await routeService.getAllRoutes()
-        res.json(routes)
-    } catch (err) {
-        res.status(500).json({ message: err.message })
-    }
-} 
+let getAllRoutes = async (req, res) => {
+  try {
+    let routes = await routeService.getAllRoutes();
+    res.json({
+      success: true,
+      data: routes,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
 
 let getRouteById = async (req, res) => {
   try {
-    let route = await routeService.getRouteById(req.params.id)
+    let route = await routeService.getRouteById(req.params.id);
 
     if (!route) {
-      return res.status(404).json({ message: "Route not found" })
+      return res.status(404).json({
+        success: false,
+        message: "Route not found",
+      });
     }
 
-    res.json(route)
+    res.json({
+      success: true,
+      data: route,
+    });
   } catch (err) {
-    res.status(500).json({ message: err.message })
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
   }
-}
+};
 
-let updateRoute = aync (req, res) => {
+let updateRoute = async (req, res) => {
   try {
-    
+    let route = await routeService.updateRoute(req.params.id, req.body);
+
+    if (!route) {
+      return res.status(404).json({
+        success: false,
+        message: "Route not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Route updated successfully",
+    });
   } catch (error) {
-    
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
+};
+
+let deleteRoute = async (req, res) => {
+  try {
+    let route = await routeService.deleteRoute(req.params.id);
+
+    if (!route) {
+      return res.status(404).json({
+        success: false,
+        message: "Route not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Route deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+module.exports = {
+  createRoute,
+  getAllRoutes,
+  getRouteById,
+  updateRoute,
+  deleteRoute
 }

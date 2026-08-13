@@ -1,7 +1,7 @@
 let express = require("express");
 const { validateBus, validateUpdateBus } = require("../middleware/validateBus");
 const { createBus, updateBus, getAllBuses, getBusById, deleteBus } = require("../controllers/busController");
-let router = express.Router();
+const router = express.Router();
 
 router.post("/", validateBus, createBus);
 router.get("/", getAllBuses);

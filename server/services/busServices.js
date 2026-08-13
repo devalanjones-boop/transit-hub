@@ -62,5 +62,5 @@ module.exports = {
   getAllBuses,
   getBusById,
   updateBus,
-  deleteBus
-}
+  deleteBus,
+};
