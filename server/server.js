@@ -19,7 +19,7 @@ app.use("/buses", busRouter)
 app.use("/routes", routeRouter)
 app.use("/stops", stopRouter)
 
-const port = process.env.port
+const port = process.env.PORT
 
 app.listen(port, () => {
 console.log("Server connected");
