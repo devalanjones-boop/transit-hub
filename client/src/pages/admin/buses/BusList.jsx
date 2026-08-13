@@ -198,7 +198,7 @@ const BusList = () => {
                                         <tr key={bus._id}>
 
                                             <td className="border border-gray-300 px-4 py-2">
-                                                {bus.busNumber}
+                                                {bus.busRegNumber}
                                             </td>
 
                                             <td className="border border-gray-300 px-4 py-2">
