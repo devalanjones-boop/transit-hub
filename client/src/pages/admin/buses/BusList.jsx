@@ -95,8 +95,8 @@ const BusList = () => {
 
     let filteredBuses = buses.filter((bus) =>
 
-        bus.busNumber.toLowerCase().includes(search.toLowerCase()) ||
-        bus.busName.toLowerCase().includes(search.toLowerCase())
+        bus.busRegNumber?.toLowerCase().includes(search.toLowerCase()) ||
+        bus.busName?.toLowerCase().includes(search.toLowerCase())
 
     );
 
