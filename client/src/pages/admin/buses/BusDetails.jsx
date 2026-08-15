@@ -1,8 +1,7 @@
 import Button from "../../../components/common/Button";
 import Loading from "../../../components/common/Loading";
 import ErrorMessage from "../../../components/common/ErrorMessage";
-
-import { getBusById } from "../../../services/busService";
+import { getBusById, deleteBus } from "../../../services/busService";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -10,7 +9,7 @@ import { useNavigate, useParams } from "react-router-dom";
 const BusDetails = () => {
 
     let navigate = useNavigate();
-    let { id } = useParams;
+    let { id } = useParams();
 
     let [bus, setBus] = useState(null);
     let [loading, setLoading] = useState(true);
@@ -23,9 +22,9 @@ const BusDetails = () => {
 
             setLoading(true);
 
-            let response = getBusById(id);
+            let response = await getBusById(id);
 
-            setBus((await response).data.data);
+            setBus(response.data.data);
 
             setError("");
 
@@ -58,6 +57,23 @@ const BusDetails = () => {
         return <ErrorMessage message={error} />
     }
 
+    let handleDelete = async () => {
+
+        try {
+
+            let response = await deleteBus(id)
+
+            alert(response.data.message)
+
+            navigate("/admin/buses")
+
+        } catch (error) {
+
+            setError(error.response?.data?.message || "Failed to Delete Bus")
+        }
+
+    }
+
 
     return (
 
@@ -68,9 +84,9 @@ const BusDetails = () => {
             <div className="mb-6">
 
                 <Button
-                    onClick={() => navigate("admin/buses")}
+                    onClick={() => navigate("/admin/buses")}
                 >
-                    ← Back to Bus List
+                    ← Back
 
                 </Button>
 
@@ -90,6 +106,64 @@ const BusDetails = () => {
 
                 </div>
 
+                {/* "Edit & Delete button" */}
+                <div>
+
+                    <Button
+                        onClick={() => navigate(`/admin/buses/${id}/edit`)}
+                    >
+                        Edit
+
+                    </Button>
+
+                    <Button onClick={handleDelete}>
+
+                        Delete
+
+                    </Button>
+
+                </div>
+
+            </div>
+
+            {/* Bus Information */}
+
+            <div>
+
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">
+
+                    Bus Information
+
+                </h2>
+
+                <div className="border border-gray-300 rounded-lg p-4 space-y-3">
+
+                    <p>
+
+                        <strong> Bus Number</strong>{" "}
+                        {bus.busRegNumber}
+                    </p>
+
+                    <p>
+
+                        <strong> Bus Name</strong>{" "}
+                        {bus.busName}
+                    </p>
+
+                    <p>
+
+                        <strong> Bus Type</strong>{" "}
+                        {bus.busType}
+                    </p>
+
+                    <p>
+
+                        <strong> Bus Status</strong>{" "}
+                        {bus.status}
+                    </p>
+
+                </div>
+
             </div>
 
         </div>
@@ -97,3 +171,4 @@ const BusDetails = () => {
     )
 
 }
+export default BusDetails;
