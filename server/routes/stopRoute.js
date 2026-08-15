@@ -7,6 +7,6 @@ router.post("/", validateStop, createStop)
 router.get("/", getAllStops)
 router.get("/:id", getStopById) 
 router.put("/:id", validateStop, updateStop)
-router.get("/:id", deleteStop) 
+router.delete("/:id", deleteStop) 
 
 module.exports = router
