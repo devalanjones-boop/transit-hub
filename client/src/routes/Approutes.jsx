@@ -4,6 +4,7 @@ import Dashboard from "../pages/admin/Dashboard";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
 import AdminLayout from "../components/admin/AdminLayout";
 import BusList from "../pages/admin/buses/BusList";
+import BusDetails from "../pages/admin/buses/BusDetails";
 
 
 const AppRoutes = () => {
@@ -14,11 +15,13 @@ const AppRoutes = () => {
 
         <Routes>
 
-            <Route path="/admin" element={<AdminLayout />}>
+            <Route path={"/admin"} element={<AdminLayout />}>
 
-                <Route path="dashboard" element={<Dashboard />} />
+                <Route path={"/dashboard"} element={<Dashboard />} />
 
-                <Route path="buses" element={<BusList />} />
+                <Route path={"/buses"} element={<BusList />} />
+
+                <Route path={"/buses/:id"} element={<BusDetails />} />
 
             </Route>
 
