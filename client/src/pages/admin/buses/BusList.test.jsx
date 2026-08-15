@@ -72,7 +72,7 @@ describe("BusList - step 1", () => {
                     {
 
                         _id: "1",
-                        busNumber: "KL01AB1234",
+                        busRegNumber: "KL01AB1234",
                         busName: "Super Fast",
                     },
                 ],
@@ -120,7 +120,7 @@ describe("BusList - step 1", () => {
                     {
 
                         _id: "1",
-                        busNumber: "KL01AB1234",
+                        busRegNumber: "KL01AB1234",
                         busName: "Super Fast",
                         busType: "Express",
                         status: "Active",
@@ -131,10 +131,10 @@ describe("BusList - step 1", () => {
 
         render(<BusList />)
 
-        const busNumber = await screen.findByText("KL01AB1234")
+        const busRegNumber = await screen.findByText("KL01AB1234")
 
         expect(
-            busNumber
+            busRegNumber
         ).toBeInTheDocument()
 
         expect(
@@ -159,14 +159,14 @@ describe("BusList - step 1", () => {
                 data: [
                     {
                         _id: "1",
-                        busNumber: "KL01AB1234",
+                        busRegNumber: "KL01AB1234",
                         busName: "Super Fast",
                         busType: "Express",
                         status: "Active",
                     },
                     {
                         _id: "2",
-                        busNumber: "KL02CD5678",
+                        busRegNumber: "KL02CD5678",
                         busName: "City Rider",
                         busType: "Ordinary",
                         status: "Inactive",
@@ -243,7 +243,7 @@ describe("BusList - step 1", () => {
                 data: [
                     {
                         _id: "1",
-                        busNumber: "KL01AB1234",
+                        busRegNumber: "KL01AB1234",
                         busName: "Super Fast",
                         busType: "Express",
                         status: "Active",
@@ -284,7 +284,7 @@ describe("BusList - step 1", () => {
                 data: [
                     {
                         _id: "1",
-                        busNumber: "KL01AB1234",
+                        busRegNumber: "KL01AB1234",
                         busName: "Super Fast",
                         busType: "Express",
                         status: "Active",
@@ -324,7 +324,7 @@ describe("BusList - step 1", () => {
                 data: [
                     {
                         _id: "1",
-                        busNumber: "KL01AB1234",
+                        busRegNumber: "KL01AB1234",
                         busName: "Super Fast",
                         busType: "Express",
                         status: "Active",
@@ -360,7 +360,7 @@ describe("BusList - step 1", () => {
                 data: [
                     {
                         _id: "1",
-                        busNumber: "KL01AB1234",
+                        busRegNumber: "KL01AB1234",
                         busName: "Super Fast",
                         busType: "Express",
                         status: "Active",
@@ -396,7 +396,7 @@ describe("BusList - step 1", () => {
                 data: [
                     {
                         _id: "1",
-                        busNumber: "KL01AB1234",
+                        busRegNumber: "KL01AB1234",
                         busName: "Super Fast",
                         busType: "Express",
                         status: "Active",
@@ -425,7 +425,7 @@ describe("BusList - step 1", () => {
                 data: [
                     {
                         _id: "1",
-                        busNumber: "KL01AB1234",
+                        busRegNumber: "KL01AB1234",
                         busName: "Super Fast",
                         busType: "Express",
                         status: "Active",
@@ -459,7 +459,7 @@ describe("BusList - step 1", () => {
                 data: [
                     {
                         _id: "1",
-                        busNumber: "KL01AB1234",
+                        busRegNumber: "KL01AB1234",
                         busName: "Super Fast",
                         busType: "Express",
                         status: "Active",
@@ -502,7 +502,7 @@ describe("BusList - step 1", () => {
                     data: [
                         {
                             _id: "1",
-                            busNumber: "KL01AB1234",
+                            busRegNumber: "KL01AB1234",
                             busName: "Super Fast",
                             busType: "Express",
                             status: "Active",
@@ -547,7 +547,7 @@ describe("BusList - step 1", () => {
                 data: [
                     {
                         _id: "1",
-                        busNumber: "KL01AB1234",
+                        busRegNumber: "KL01AB1234",
                         busName: "Super Fast",
                         busType: "Express",
                         status: "Active",
@@ -605,7 +605,7 @@ describe("BusList - step 1", () => {
                 data: [
                     {
                         _id: "1",
-                        busNumber: "KL01AB1234",
+                        busRegNumber: "KL01AB1234",
                         busName: "Super Fast",
                         busType: "Express",
                         status: "Active",
@@ -636,7 +636,7 @@ describe("BusList - step 1", () => {
     it("should display 10 buses on the first page", async () => {
         const buses = Array.from({ length: 12 }, (_, index) => ({
             _id: `${index + 1}`,
-            busNumber: `KL01AB${index + 1}`,
+            busRegNumber: `KL01AB${index + 1}`,
             busName: `Bus ${index + 1}`,
             busType: "Express",
             status: "Active",
@@ -670,7 +670,7 @@ describe("BusList - step 1", () => {
     it("should display next page buses when Next button is clicked", async () => {
         const buses = Array.from({ length: 12 }, (_, index) => ({
             _id: `${index + 1}`,
-            busNumber: `KL01AB${index + 1}`,
+            busRegNumber: `KL01AB${index + 1}`,
             busName: `Bus ${index + 1}`,
             busType: "Express",
             status: "Active",
@@ -714,7 +714,7 @@ describe("BusList - step 1", () => {
     it("should display previous page buses when Previous button is clicked", async () => {
         const buses = Array.from({ length: 12 }, (_, index) => ({
             _id: `${index + 1}`,
-            busNumber: `KL01AB${index + 1}`,
+            busRegNumber: `KL01AB${index + 1}`,
             busName: `Bus ${index + 1}`,
             busType: "Express",
             status: "Active",
@@ -761,7 +761,7 @@ describe("BusList - step 1", () => {
     it("should disable Previous on first page and Next on last page", async () => {
         const buses = Array.from({ length: 12 }, (_, index) => ({
             _id: `${index + 1}`,
-            busNumber: `KL01AB${index + 1}`,
+            busRegNumber: `KL01AB${index + 1}`,
             busName: `Bus ${index + 1}`,
             busType: "Express",
             status: "Active",
@@ -807,14 +807,14 @@ describe("BusList - step 1", () => {
                 data: [
                     {
                         _id: "1",
-                        busNumber: "KL01AB1234",
+                        busRegNumber: "KL01AB1234",
                         busName: "Super Fast",
                         busType: "Express",
                         status: "Active",
                     },
                     {
                         _id: "2",
-                        busNumber: "KL02CD5678",
+                        busRegNumber: "KL02CD5678",
                         busName: "Fast Passenger",
                         busType: "Ordinary",
                         status: "Active",
@@ -850,14 +850,14 @@ describe("BusList - step 1", () => {
                 data: [
                     {
                         _id: "1",
-                        busNumber: "KL01AB1234",
+                        busRegNumber: "KL01AB1234",
                         busName: "Super Fast",
                         busType: "Express",
                         status: "Active",
                     },
                     {
                         _id: "2",
-                        busNumber: "KL02CD5678",
+                        busRegNumber: "KL02CD5678",
                         busName: "Fast Passenger",
                         busType: "Ordinary",
                         status: "Active",
@@ -893,7 +893,7 @@ describe("BusList - step 1", () => {
                 data: [
                     {
                         _id: "1",
-                        busNumber: "KL01AB1234",
+                        busRegNumber: "KL01AB1234",
                         busName: "Super Fast",
                         busType: "Express",
                         status: "Active",

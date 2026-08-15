@@ -95,8 +95,8 @@ const BusList = () => {
 
     let filteredBuses = buses.filter((bus) =>
 
-        bus.busNumber.toLowerCase().includes(search.toLowerCase()) ||
-        bus.busName.toLowerCase().includes(search.toLowerCase())
+        bus.busRegNumber?.toLowerCase().includes(search.toLowerCase()) ||
+        bus.busName?.toLowerCase().includes(search.toLowerCase())
 
     );
 
@@ -198,7 +198,7 @@ const BusList = () => {
                                         <tr key={bus._id}>
 
                                             <td className="border border-gray-300 px-4 py-2">
-                                                {bus.busNumber}
+                                                {bus.busRegNumber}
                                             </td>
 
                                             <td className="border border-gray-300 px-4 py-2">
