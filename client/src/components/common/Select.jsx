@@ -1,16 +1,13 @@
-import { ref } from "yup"
-import { forwardRef } from "react"
 
+import { forwardRef } from "react";
 
-
-const Input = forwardRef(({
+const Select = forwardRef(({
 
     id,
-    type = "text",
     name,
     value,
     onChange,
-    placeholder = "",
+    options = [],
     className = "",
     disabled = false
 
@@ -18,15 +15,13 @@ const Input = forwardRef(({
 
     return (
 
-        <input
+        <select
 
             id={id}
             ref={ref}
-            type={type}
             name={name}
             value={value}
             onChange={onChange}
-            placeholder={placeholder}
             disabled={disabled}
             className={`w-full
                 px-4
@@ -41,10 +36,24 @@ const Input = forwardRef(({
                 disabled:bg-gray-100
                 disabled:cursor-not-allowed
                 ${className}`}
+        >
 
-        />
+            {options.map((option) => (
 
-    )
-})
+                <option
+                    key={option.value}
+                    value={option.value}
+                >
 
-export default Input
+                    {option.label}
+
+                </option>
+            ))}
+
+
+        </select>
+
+    );
+});
+
+export default Select;
