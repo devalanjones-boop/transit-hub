@@ -1,4 +1,4 @@
-const stopService = require("../services/stopServices");
+const stopService = require("../services/stopService");
 const { message } = require("../validations/stopValidation");
 
 const createStop = async (req, res) => {
