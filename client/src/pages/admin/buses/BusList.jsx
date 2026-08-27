@@ -7,6 +7,8 @@ import Input from "../../../components/common/Input";
 import { deleteBus, getAllBuses } from "../../../services/busService";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import { toast } from "sonner";
 
 const BusList = () => {
 
@@ -65,17 +67,36 @@ const BusList = () => {
 
     let handleDelete = async (id) => {
 
+        let result = await Swal.fire({
+
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+
+            showCancelButton: true,
+
+            confirmButtonText: "Yes, delete it",
+            cancelButtonText: "Cancel"
+
+        });
+
+        if (!result.isConfirmed) {
+
+            return;
+
+        }
+
         try {
 
             let response = await deleteBus(id);
 
-            alert(response.data.message)
+            toast.success(response.data.message);
 
             fetchBuses();
 
         } catch (error) {
 
-            alert(error.response?.data?.message || "Failed To Delete Bus")
+            toast.error(error.response?.data?.message || "Failed To Delete Bus");
         }
 
     }
@@ -122,13 +143,23 @@ const BusList = () => {
 
         <>
 
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
 
-                <h1 className="text-2xl font-bold text-gray-800 mb-6">
+                <div className="flex items-center justify-between mb-6">
 
-                    Bus List
+                    <h1 className="text-2xl font-bold text-gray-800">
 
-                </h1>
+                        Bus List
+
+                    </h1>
+
+                    <Button
+                        onClick={() => navigate("/admin/buses/create")}
+                    >
+                        Add Bus
+                    </Button>
+
+                </div>
 
                 <div className="mb-6">
 
@@ -145,7 +176,7 @@ const BusList = () => {
 
                 </div>
 
-                <div className="overflow-x-auto">
+                <div className="w-full overflow-x-auto">
 
                     {search && filteredBuses.length === 0 ? (
 
@@ -159,7 +190,7 @@ const BusList = () => {
 
                         <>
 
-                            <table className="w-full border-collapse border border-gray-300">
+                            <table className="min-w-[700px] w-full border-collapse border border-gray-300">
 
                                 <thead>
 
@@ -181,7 +212,7 @@ const BusList = () => {
                                             Status
                                         </th>
 
-                                        <th className="border border-gray-300 px-4 py-2 text-left">
+                                        <th className="border border-gray-300 px-4 py-2 text-left whitespace-nowrap">
                                             Action
                                         </th>
 
@@ -215,17 +246,21 @@ const BusList = () => {
 
                                             <td className="border border-gray-300 px-4 py-2">
 
-                                                <Button onClick={() => navigate(`/admin/buses/${bus._id}`)}>
-                                                    View
-                                                </Button>
+                                                <div className="flex flex-col gap-2 sm:flex-row">
 
-                                                <Button onClick={() => navigate(`/admin/buses/${bus._id}/edit`)}>
-                                                    Edit
-                                                </Button>
+                                                    <Button onClick={() => navigate(`/admin/buses/${bus._id}`)}>
+                                                        View
+                                                    </Button>
 
-                                                <Button onClick={() => handleDelete(bus._id)}>
-                                                    Delete
-                                                </Button>
+                                                    <Button onClick={() => navigate(`/admin/buses/${bus._id}/edit`)}>
+                                                        Edit
+                                                    </Button>
+
+                                                    <Button onClick={() => handleDelete(bus._id)}>
+                                                        Delete
+                                                    </Button>
+
+                                                </div>
 
                                             </td>
 
