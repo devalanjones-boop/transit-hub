@@ -9,6 +9,7 @@ import Button from "../../../components/common/Button";
 import Input from "../../../components/common/Input";
 import Select from "../../../components/common/Select";
 import updateBusSchema from "../../../validations/bus/updateBusSchema";
+import { toast } from "sonner";
 
 
 
@@ -34,19 +35,17 @@ const UpdateBus = () => {
 
         try {
 
-            setError("");
-
             setUpdating(true);
 
             let response = await updateBus(id, data);
 
-            console.log(response.data.message);
+            toast.success(response.data.message);
 
             navigate("/admin/buses");
 
         } catch (error) {
 
-            setError(error.response?.data?.message || "Failed to update bus");
+            toast.error(error.response?.data?.message || "Failed to update bus");
 
         } finally {
 

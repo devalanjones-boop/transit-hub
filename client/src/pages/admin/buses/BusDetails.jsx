@@ -4,6 +4,8 @@ import ErrorMessage from "../../../components/common/ErrorMessage";
 import { getBusById, deleteBus } from "../../../services/busService";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Swal from "sweetalert2";
+import { toast } from "sonner";
 
 
 const BusDetails = () => {
@@ -59,17 +61,35 @@ const BusDetails = () => {
 
     let handleDelete = async () => {
 
+        let result = await Swal.fire({
+
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+
+            showCancelButton: true,
+
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "Cancel"
+
+        });
+
+        if (!result.isConfirmed) {
+
+            return;
+        }
+
         try {
 
             let response = await deleteBus(id)
 
-            alert(response.data.message)
+            toast.success(response.data.message)
 
             navigate("/admin/buses")
 
         } catch (error) {
 
-            setError(error.response?.data?.message || "Failed to Delete Bus")
+            toast.error(error.response?.data?.message || "Failed to Delete Bus")
         }
 
     }
@@ -107,7 +127,7 @@ const BusDetails = () => {
                 </div>
 
                 {/* "Edit & Delete button" */}
-                <div>
+                <div className="flex gap-2">
 
                     <Button
                         onClick={() => navigate(`/admin/buses/${id}/edit`)}
