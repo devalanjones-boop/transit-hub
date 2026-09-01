@@ -1,18 +1,40 @@
-const busType = require("../models/busTypeModel");
+const BusType = require("../models/busTypeModel");
+
+const createBusTypeService = async (data) => {
+  const { busType, baseFare, farePerKm } = data;
+
+  const existingBusType = await BusType.findOne({
+    busType: { $regex: new RegExp(`^${busType.trim()}$`, "i") },
+  });
+
+  if (existingBusType) {
+    const error = new Error(`Bus type '${busType}' already exists`);
+    error.statusCode = 409; // Conflict
+    throw error;
+  }
+
+  const newFareRate = await BusType.create({
+    busType: busType.trim(),
+    baseFare,
+    farePerKm,
+  });
+
+  return newFareRate;
+};
 
 const calculateFareService = async (
   busTypeId,
   distanceInKm,
   passengers = 1,
 ) => {
-  const bus = await busType.findById(busTypeId);
+  const bus = await BusType.findById(busTypeId);
   if (!bus) {
     const err = new Error("Bus type not found");
     err.statusCode = 404;
     throw err;
   }
 
-  const farePerPassenger = bus.baseFare + distanceInKm * buss.farePerKm;
+  const farePerPassenger = bus.baseFare + distanceInKm * bus.farePerKm;
   const totalFare = farePerPassenger * passengers;
 
   return {
@@ -27,7 +49,9 @@ const calculateFareService = async (
 };
 
 const getAllFaresService = async () => {
-  return await BusType.find().select("busType baseFare farePerKm createdAt updatedAt");
+  return await BusType.find().select(
+    "busType baseFare farePerKm createdAt updatedAt",
+  );
 };
 
 const getFareByIdService = async (id) => {
@@ -56,6 +80,7 @@ const updateFareService = async (id, updateData) => {
 };
 
 module.exports = {
+  createBusTypeService,
   calculateFareService,
   getAllFaresService,
   getFareByIdService,

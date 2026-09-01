@@ -1,4 +1,29 @@
-const { fareCalculationScheme, fareQuerySchema, idParamSchema, updateFareSchema } = require("../validations/busTypeValidation");
+const {
+  fareCalculationScheme,
+  fareQuerySchema,
+  idParamSchema,
+  updateFareSchema,
+  createbusTypeSchema,
+} = require("../validations/busTypeValidation");
+
+const validateCreateBusType = (req, res, next) => {
+  const { error, value } = createbusTypeSchema.validate(req.body, {
+    abortEarly: false,
+    stripUnknown: true,
+  });
+
+  if (error) {
+    const errorDetails = error.details.map((detail) => detail.message);
+    return res.status(400).json({
+      success: false,
+      message: "Validation Error",
+      errors: errorDetails,
+    });
+  }
+
+  req.body = value;
+  next();
+};
 
 const validateCalculateFare = (req, res, next) => {
   const { error, value } = fareCalculationScheme.validate(req.body, {
@@ -46,6 +71,7 @@ const validateUpdateFare = (req, res, next) => {
 };
 
 module.exports = {
+  validateCreateBusType,
   validateCalculateFare,
   validateFareQuery,
   validateIdParam,

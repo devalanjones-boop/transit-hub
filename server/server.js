@@ -21,7 +21,7 @@ app.use("/buses", busRouter)
 app.use("/routes", routeRouter)
 app.use("/stops", stopRouter)
 app.use("/shedules", scheduleRouter)
-app.use("/buseType", busTypeRouter)
+app.use("/busType", busTypeRouter)
 
 const port = process.env.PORT
 
