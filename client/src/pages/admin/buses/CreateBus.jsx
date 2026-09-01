@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup";
 import { createBus } from "../../../services/busService";
 import { useState } from "react";
+import { toast } from "sonner";
 
 
 
@@ -25,25 +26,22 @@ const CreateBus = () => {
     })
 
     let [loading, setLoading] = useState(false)
-    let [error, setError] = useState("");
 
     let onSubmit = async (data) => {
 
         try {
 
-            setError("");
-
             setLoading(true);
 
             let response = await createBus(data);
 
-            console.log(response.data.message);
+            toast.success(response.data.message);
 
             navigate("/admin/buses");
 
         } catch (error) {
 
-            setError(error.response?.data?.message || "Failed to Create Bus");
+            toast.error(error.response?.data?.message || "Failed to Create Bus");
 
         } finally {
 
@@ -84,11 +82,6 @@ const CreateBus = () => {
 
             <div className="border border-gray-300 rounded-lg p-6">
 
-                {error && (
-                    <div className="mb-4">
-                        <ErrorMessage message={error} />
-                    </div>
-                )}
 
                 <form
                     onSubmit={handleSubmit(onSubmit)}
