@@ -16,7 +16,7 @@ export const createBus = async (busData) => {
     return await api.post("/buses", busData)
 };
 
-export const updateBus = async (id,busData) => {
+export const updateBus = async (id, busData) => {
 
     return await api.put(`/buses/${id}`, busData)
 };

@@ -1,57 +1,56 @@
-import Button from "../../../components/common/Button";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom"
 import Loading from "../../../components/common/Loading";
 import ErrorMessage from "../../../components/common/ErrorMessage";
-import { getBusById, deleteBus } from "../../../services/busService";
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
+import { deleteRoute, getRouteById } from "../../../services/routeService";
+import Button from "../../../components/common/Button";
 
 
-const BusDetails = () => {
+const RouteDetails = () => {
 
     let navigate = useNavigate();
     let { id } = useParams();
 
-    let [bus, setBus] = useState(null);
+    let [route, setRoute] = useState(null);
     let [loading, setLoading] = useState(true);
     let [error, setError] = useState("");
 
 
-    let fetchBus = async () => {
+    let fetchRoute = async () => {
 
         try {
 
             setLoading(true);
 
-            let response = await getBusById(id);
-
-            setBus(response.data.data);
-
             setError("");
+
+            let response = await getRouteById(id);
+
+            setRoute(response.data.data);
 
         } catch (error) {
 
-            setError(error.response?.data?.message || "Failed to get bus");
+            setError(error.response?.data?.message || "Failed to get route");
 
         } finally {
 
             setLoading(false);
-
         }
 
     }
 
     useEffect(() => {
 
-        fetchBus();
+        fetchRoute();
 
     }, [id]);
 
 
     if (loading) {
 
-        return <Loading message="Loading Bus Details..." />
+        return <Loading message="Loading Route Details..." />
     }
 
     if (error) {
@@ -81,15 +80,15 @@ const BusDetails = () => {
 
         try {
 
-            let response = await deleteBus(id)
+            let response = await deleteRoute(id)
 
             toast.success(response.data.message)
 
-            navigate("/admin/buses")
+            navigate("/admin/routes")
 
         } catch (error) {
 
-            toast.error(error.response?.data?.message || "Failed to Delete Bus")
+            toast.error(error.response?.data?.message || "Failed to Delete Route")
         }
 
     }
@@ -104,7 +103,7 @@ const BusDetails = () => {
             <div className="mb-6">
 
                 <Button
-                    onClick={() => navigate("/admin/buses")}
+                    onClick={() => navigate("/admin/routes")}
                 >
                     ← Back
 
@@ -120,24 +119,24 @@ const BusDetails = () => {
 
                     <h1 className="text-2xl font-bold text-gray-800">
 
-                        Bus Details
+                        Route Details
 
                     </h1>
 
                 </div>
 
-                {/* "Edit & Delete button" */}
+                {/* Edit & Delete Button */}
 
                 <div className="flex gap-2">
 
                     <Button
-                        onClick={() => navigate(`/admin/buses/${id}/edit`)}
+                        onClick={() => navigate(`/admin/routes/${id}/edit`)}
                     >
                         Edit
 
                     </Button>
 
-                    <Button onClick={handleDelete}>
+                    <Button onClick={handleDelete} >
 
                         Delete
 
@@ -147,13 +146,13 @@ const BusDetails = () => {
 
             </div>
 
-            {/* Bus Information */}
+            {/* Route Information */}
 
             <div>
 
                 <h2 className="text-xl font-semibold text-gray-800 mb-4">
 
-                    Bus Information
+                    Route Information
 
                 </h2>
 
@@ -161,26 +160,20 @@ const BusDetails = () => {
 
                     <p>
 
-                        <strong> Bus Number:</strong>{" "}
-                        {bus.busRegNumber}
+                        <strong>Route Name:</strong>{" "}
+                        {route.routeName}
                     </p>
 
                     <p>
 
-                        <strong> Bus Name:</strong>{" "}
-                        {bus.busName}
+                        <strong>Source:</strong>{" "}
+                        {route.source}
                     </p>
 
                     <p>
 
-                        <strong> Bus Type:</strong>{" "}
-                        {bus.busType}
-                    </p>
-
-                    <p>
-
-                        <strong> Bus Status:</strong>{" "}
-                        {bus.status}
+                        <strong>Destination:</strong>{" "}
+                        {route.destination}
                     </p>
 
                 </div>
@@ -192,4 +185,4 @@ const BusDetails = () => {
     )
 
 }
-export default BusDetails;
+export default RouteDetails;

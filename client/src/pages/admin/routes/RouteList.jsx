@@ -1,46 +1,46 @@
-import Loading from "../../../components/common/Loading";
-import ErrorMessage from "../../../components/common/ErrorMessage";
-import Button from "../../../components/common/Button"
-import EmptyState from "../../../components/common/EmptyState";
-import Pagination from "../../../components/common/Pagination";
-import Input from "../../../components/common/Input";
-import { deleteBus, getAllBuses } from "../../../services/busService";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { deleteRoute, getAllRoutes } from "../../../services/routeService";
+import Loading from "../../../components/common/Loading";
+import ErrorMessage from "../../../components/common/ErrorMessage";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
+import EmptyState from "../../../components/common/EmptyState";
+import Input from "../../../components/common/Input";
+import Pagination from "../../../components/common/Pagination";
+import Button from "../../../components/common/Button";
 
-const BusList = () => {
+
+const RouteList = () => {
 
     let navigate = useNavigate();
 
-    let [buses, setBuses] = useState([]);
+    let [routes, setRoutes] = useState([]);
     let [loading, setLoading] = useState(true);
     let [error, setError] = useState("");
     let [currentPage, setCurrentPage] = useState(1);
     let [search, setSearch] = useState("");
 
 
-    let fetchBuses = async () => {
+    let fetchRoutes = async () => {
 
         try {
 
-            setLoading(true)
+            setLoading(true);
 
-            let response = await getAllBuses();
+            setError("");
 
-            setBuses(response.data.data)
+            let response = await getAllRoutes();
 
-            setError("")
-
+            setRoutes(response.data.data)
 
         } catch (error) {
 
-            setError(error.response?.data?.message || "Failed To Get Buses")
+            setError(error.response?.data?.message || "Failed To Get Routes")
 
         } finally {
 
-            setLoading(false)
+            setLoading(false);
 
         }
 
@@ -48,13 +48,13 @@ const BusList = () => {
 
     useEffect(() => {
 
-        fetchBuses();
+        fetchRoutes();
 
     }, [])
 
     if (loading) {
 
-        return <Loading message="Loading Buses..." />
+        return <Loading message="Loading Routes..." />
 
     }
 
@@ -87,53 +87,57 @@ const BusList = () => {
 
         try {
 
-            let response = await deleteBus(id);
+            let response = await deleteRoute(id);
 
             toast.success(response.data.message);
 
-            fetchBuses();
+            setCurrentPage(1);
+
+            fetchRoutes();
 
         } catch (error) {
 
-            toast.error(error.response?.data?.message || "Failed To Delete Bus");
+            toast.error(error.response?.data?.message || "Failed To Delete Route")
+
         }
 
     }
 
-    if (buses.length === 0) {
+    if (routes.length === 0) {
 
         return (
 
             <EmptyState
-                title="No Buses Found"
-                message="You Haven't Added Any Buses Yet. Create First Bus"
-                buttonText="Create Bus"
-                onClick={() => navigate("/admin/buses/create")}
+                title="No Routes Found"
+                message="You Haven't Added Any Routes Yet. Create First Route"
+                buttonText="Create Route"
+                onClick={() => navigate("/admin/routes/create")}
+                icon="🛣️"
             />
         )
     }
 
-    let filteredBuses = buses.filter((bus) =>
+    let filteredRoutes = routes.filter((route) =>
 
-        bus.busRegNumber?.toLowerCase().includes(search.toLowerCase()) ||
-        bus.busName?.toLowerCase().includes(search.toLowerCase())
+        route.routeName?.toLowerCase().includes(search.toLowerCase())
 
     );
 
-    let busesPerPage = 10;
+    let routesPerPage = 10;
 
-    let indexOfLastBus = currentPage * busesPerPage;
-    let indexOfFirstBus = indexOfLastBus - busesPerPage;
+    let indexOfLastRoute = currentPage * routesPerPage;
+    let indexOfFirstRoute = indexOfLastRoute - routesPerPage;
 
-    let currentBuses = filteredBuses.slice(
+    let currentRoutes = filteredRoutes.slice(
 
-        indexOfFirstBus,
-        indexOfLastBus
+        indexOfFirstRoute,
+        indexOfLastRoute
     );
 
     let totalPages = Math.ceil(
-        filteredBuses.length / busesPerPage
+        filteredRoutes.length / routesPerPage
     );
+
 
 
 
@@ -142,20 +146,21 @@ const BusList = () => {
 
         <>
 
+
             <div className="p-4 sm:p-6">
 
                 <div className="flex items-center justify-between mb-6">
 
                     <h1 className="text-2xl font-bold text-gray-800">
 
-                        Bus List
+                        Route List
 
                     </h1>
 
                     <Button
-                        onClick={() => navigate("/admin/buses/create")}
+                        onClick={() => navigate("/admin/routes/create")}
                     >
-                        Add Bus
+                        Add Route
                     </Button>
 
                 </div>
@@ -169,7 +174,7 @@ const BusList = () => {
                             setSearch(e.target.value)
                             setCurrentPage(1)
                         }}
-                        placeholder="Search Bus or Number..."
+                        placeholder="Search Route or Source or Destination..."
                         className="w-full md:w-96 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
 
@@ -177,11 +182,12 @@ const BusList = () => {
 
                 <div className="w-full overflow-x-auto">
 
-                    {search && filteredBuses.length === 0 ? (
+                    {search && filteredRoutes.length === 0 ? (
 
                         <EmptyState
                             title="No Result Found"
-                            message="No buses match your search. Try a different bus number or bus name"
+                            message="No routes match your search. Try a different routes name or source or destination"
+                            icon="🛣️"
 
                         />
 
@@ -196,19 +202,15 @@ const BusList = () => {
                                     <tr className="bg-gray-100">
 
                                         <th className="border border-gray-300 px-4 py-2 text-left">
-                                            Bus Number
+                                            Route Name
                                         </th>
 
                                         <th className="border border-gray-300 px-4 py-2 text-left">
-                                            Bus Name
+                                            Source
                                         </th>
 
                                         <th className="border border-gray-300 px-4 py-2 text-left">
-                                            Bus Type
-                                        </th>
-
-                                        <th className="border border-gray-300 px-4 py-2 text-left">
-                                            Status
+                                            Destination
                                         </th>
 
                                         <th className="border border-gray-300 px-4 py-2 text-left whitespace-nowrap">
@@ -222,46 +224,41 @@ const BusList = () => {
 
                                 <tbody>
 
-                                    {currentBuses.map((bus) => (
+                                    {currentRoutes.map((route) => (
 
-                                        <tr key={bus._id}>
+                                        <tr key={route._id}>
 
                                             <td className="border border-gray-300 px-4 py-2">
-                                                {bus.busRegNumber}
+                                                {route.routeName}
                                             </td>
 
                                             <td className="border border-gray-300 px-4 py-2">
-                                                {bus.busName}
+                                                {route.source}
                                             </td>
 
                                             <td className="border border-gray-300 px-4 py-2">
-                                                {bus.busType}
-                                            </td>
-
-                                            <td className="border border-gray-300 px-4 py-2">
-                                                {bus.status}
+                                                {route.destination}
                                             </td>
 
                                             <td className="border border-gray-300 px-4 py-2">
 
                                                 <div className="flex flex-col gap-2 sm:flex-row">
 
-                                                    <Button onClick={() => navigate(`/admin/buses/${bus._id}`)}>
+                                                    <Button onClick={() => navigate(`/admin/routes/${route._id}`)}>
                                                         View
                                                     </Button>
 
-                                                    <Button onClick={() => navigate(`/admin/buses/${bus._id}/edit`)}>
+                                                    <Button onClick={() => navigate(`/admin/routes/${route._id}/edit`)}>
                                                         Edit
                                                     </Button>
 
-                                                    <Button onClick={() => handleDelete(bus._id)}>
+                                                    <Button onClick={() => handleDelete(route._id)}>
                                                         Delete
                                                     </Button>
 
                                                 </div>
 
                                             </td>
-
 
                                         </tr>
 
@@ -281,6 +278,7 @@ const BusList = () => {
 
                         </>
 
+
                     )}
 
                 </div>
@@ -288,8 +286,9 @@ const BusList = () => {
             </div>
 
         </>
+
     );
 
 };
 
-export default BusList;
+export default RouteList;

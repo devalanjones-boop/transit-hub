@@ -1,13 +1,14 @@
-import { useLocation, useNavigate } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import { Menu, Bell, UserCircle } from "lucide-react";
 
 
 
-const AdminNavbar = ({ setSidebarOpen,sidebarOpen }) => {
+const AdminNavbar = ({ setSidebarOpen, sidebarOpen }) => {
 
 
     let navigate = useNavigate();
     let location = useLocation();
+    let { id } = useParams();
 
 
     let getPageAction = () => {
@@ -23,8 +24,8 @@ const AdminNavbar = ({ setSidebarOpen,sidebarOpen }) => {
         }
 
         if (path === "/admin/buses/create" ||
-            path.startsWith("/admin/buses/update") ||
-            path.startsWith("/admin/buses/details")
+            path.startsWith(`/admin/buses/${id}/edit`) ||
+            path.startsWith(`/admin/buses/${id}`)
         ) {
             return {
                 label: "Bus List",
@@ -32,91 +33,91 @@ const AdminNavbar = ({ setSidebarOpen,sidebarOpen }) => {
             }
         }
 
-        if (path === "/admin/route") {
+        if (path === "/admin/routes") {
 
             return {
                 label: "Add Route",
-                action: () => navigate("/admin/route/create")
+                action: () => navigate("/admin/routes/create")
             }
         }
 
-        if (path === "/admin/route/create" ||
-            path.startsWith("/admin/route/update") ||
-            path.startsWith("/admin/route/details")
+        if (path === "/admin/routes/create" ||
+            path.startsWith(`/admin/routes/${id}/edit`) ||
+            path.startsWith(`/admin/routes/${id}`)
         ) {
             return {
                 label: "Route List",
-                action: () => navigate("/admin/route")
+                action: () => navigate("/admin/routes")
             }
         }
 
-        if (path === "/admin/stop") {
+        if (path === "/admin/stops") {
 
             return {
                 label: "Add Stop",
-                action: () => navigate("/admin/stop/create")
+                action: () => navigate("/admin/stops/create")
             }
         }
 
-        if (path === "/admin/stop/create" ||
-            path.startsWith("/admin/stop/update") ||
-            path.startsWith("/admin/stop/details")
+        if (path === "/admin/stops/create" ||
+            path.startsWith("/admin/stops/update") ||
+            path.startsWith("/admin/stops/details")
         ) {
             return {
                 label: "Stop List",
-                action: () => navigate("/admin/stop")
+                action: () => navigate("/admin/stops")
             }
         }
 
-        if (path === "/admin/schedule") {
+        if (path === "/admin/schedules") {
 
             return {
                 label: "Add Schedule",
-                action: () => navigate("admin/schedule/create")
+                action: () => navigate("admin/schedules/create")
             }
         }
 
-        if (path === "/admin/schedule/create" ||
-            path.startsWith("/admin/schedule/update") ||
-            path.startsWith("/admin/schedule/details")
+        if (path === "/admin/schedules/create" ||
+            path.startsWith("/admin/schedules/update") ||
+            path.startsWith("/admin/schedules/details")
         ) {
             return {
                 label: "Schedule List",
-                action: () => navigate("/admin/schedule")
+                action: () => navigate("/admin/schedules")
             }
         }
 
-        if (path === "/admin/fare") {
+        if (path === "/admin/fares") {
             return {
                 label: "Add Fare",
-                action: () => navigate("/admin/fare/create")
+                action: () => navigate("/admin/fares/create")
             }
         }
 
-        if (path === "/admin/fare/create" ||
-            path.startsWith("/admin/fare/update") ||
-            path.startsWith("/admin/fare/details")
+        if (path === "/admin/fares/create" ||
+            path.startsWith("/admin/fares/update") ||
+            path.startsWith("/admin/fares/details")
         ) {
             return {
                 label: "Fare List",
-                action: () => navigate("/admin/fare")
+                action: () => navigate("/admin/fares")
             }
         }
 
-        if (path === "/admin/notification") {
+        if (path === "/admin/notifications") {
 
             return {
                 label: "Add Notification",
-                action: () => navigate("/admin/notification/create")
+                action: () => navigate("/admin/notifications/create")
             }
         }
 
-        if (path === "/admin/notification/create" ||
-            path.startsWith("/admin/notification/details")
+        if (path === "/admin/notifications/create" ||
+            path.startsWith("/admin/notifications/details")
         ) {
             return {
                 label: "Notification List",
-                action: () => navigate("admin/notification")
+                action: () => navigate("admin/notifications")
             }
         }
 
