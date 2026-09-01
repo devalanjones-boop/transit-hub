@@ -13,13 +13,15 @@ mongodbConnect()
 
 let busRouter = require("./routes/busRoutes")
 let routeRouter = require("./routes/routeRoutes")
-let stopRouter = require("./routes/stopRoute")
-let scheduleRouter = require("./routes/scheduleRoute")
+let stopRouter = require("./routes/stopRoutes")
+let scheduleRouter = require("./routes/scheduleRoutes")
+let busTypeRouter = require("./routes/busTypeRoutes")
 
 app.use("/buses", busRouter)
 app.use("/routes", routeRouter)
 app.use("/stops", stopRouter)
 app.use("/shedules", scheduleRouter)
+app.use("/buseType", busTypeRouter)
 
 const port = process.env.PORT
 
