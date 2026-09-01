@@ -76,5 +76,6 @@ const scheduleSchema = new mongoose.Schema(
 
 scheduleSchema.index({ routeId: 1, days: 1 });
 scheduleSchema.index({ "stops.stopId": 1 }); // Index to quickly search schedules passing through a specific stop
+scheduleSchema.index({ busId: 1, days: 1, departureTime: 1 });
 
 module.exports = mongoose.model("Schedule", scheduleSchema);

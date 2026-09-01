@@ -1,4 +1,4 @@
-const routeService = require("../services/routeService")
+const routeService = require("../services/routeServices")
 
 let createRoute = async (req, res) => {
   try {

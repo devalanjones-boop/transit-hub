@@ -19,6 +19,9 @@
   "author": "Alan, Aswin",
   "type": "commonjs",
   "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",

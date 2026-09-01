@@ -16,7 +16,7 @@ const busSchema = new mongoose.Schema(
     busType: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "BusType", 
-    //   required: true,
+      required: true,
     },
     status: {
       type: String,

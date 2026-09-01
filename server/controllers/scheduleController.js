@@ -1,4 +1,4 @@
-const scheduleService = require("../services/scheduleServices")
+const scheduleService = require("../services/scheduleServices");
 
 let createSchedule = async (req, res) => {
   try {
@@ -88,10 +88,40 @@ let deleteSchedule = async (req, res) => {
   }
 };
 
+let getUpcomingSchedulesByBus = async (req, res) => {
+  try {
+    const { busId } = req.params;
+
+    // Get current day and current time (HH:mm)
+    const now = new Date();
+    const currentDay = now.toLocaleDateString("en-US", { weekday: "long" });
+    const currentTime = now.toTimeString().slice(0, 5); // Returns "HH:mm"
+
+    const upcomingSchedules = await Schedule.find({
+      busId,
+      days: currentDay,
+      departureTime: { $gte: currentTime },
+      status: { $nin: ["CANCELLED", "COMPLETED"] },
+    })
+      .populate("routeId", "routeName startLocation endLocation")
+      .populate("stops.stopId", "stopName location")
+      .sort({ departureTime: 1 });
+
+    return res.status(200).json({
+      success: true,
+      count: upcomingSchedules.length,
+      data: upcomingSchedules,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   createSchedule,
   getAllSchedules,
   getScheduleById,
   updateSchedule,
   deleteSchedule,
+  getUpcomingSchedulesByBus,
 };
