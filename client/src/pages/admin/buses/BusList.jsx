@@ -235,7 +235,7 @@ const BusList = () => {
                                             </td>
 
                                             <td className="border border-gray-300 px-4 py-2">
-                                                {bus.busType}
+                                                {bus.busType?.busType}
                                             </td>
 
                                             <td className="border border-gray-300 px-4 py-2">

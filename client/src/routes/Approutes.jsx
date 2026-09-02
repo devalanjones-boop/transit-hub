@@ -10,6 +10,7 @@ import UpdateBus from "../pages/admin/buses/UpdateBus";
 import RouteList from "../pages/admin/routes/RouteList";
 import RouteDetails from "../pages/admin/routes/RouteDetails";
 import CreateRoute from "../pages/admin/routes/CreateRoute";
+import UpdateRoute from "../pages/admin/routes/UpdateRoute";
 
 
 const AppRoutes = () => {
@@ -37,6 +38,8 @@ const AppRoutes = () => {
                 <Route path={"routes/:id"} element={<RouteDetails />} />
 
                 <Route path={"routes/create"} element={<CreateRoute />} />
+
+                <Route path={"routes/:id/edit"} element={<UpdateRoute />} />
 
             </Route>
 
