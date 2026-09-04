@@ -1,49 +1,47 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"
+import { deleteStop, getAllStops } from "../../../services/stopService";
 import Loading from "../../../components/common/Loading";
 import ErrorMessage from "../../../components/common/ErrorMessage";
-import Button from "../../../components/common/Button"
-import EmptyState from "../../../components/common/EmptyState";
-import Pagination from "../../../components/common/Pagination";
-import Input from "../../../components/common/Input";
-import { deleteBus, getAllBuses } from "../../../services/busService";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
+import EmptyState from "../../../components/common/EmptyState";
+import Button from "../../../components/common/Button";
+import Input from "../../../components/common/Input";
+import Pagination from "../../../components/common/Pagination";
 
 
 
 
-const BusList = () => {
+const StopList = () => {
 
     let navigate = useNavigate();
 
-    let [buses, setBuses] = useState([]);
+    let [stops, setStops] = useState([]);
     let [loading, setLoading] = useState(true);
     let [error, setError] = useState("");
     let [currentPage, setCurrentPage] = useState(1);
     let [search, setSearch] = useState("");
 
-
-    let fetchBuses = async () => {
+    let fetchStops = async () => {
 
         try {
 
-            setLoading(true)
-
-            let response = await getAllBuses();
-
-            setBuses(response.data.data)
+            setLoading(true);
 
             setError("")
 
+            let response = await getAllStops();
+
+            setStops(response.data.data)
 
         } catch (error) {
 
-            setError(error.response?.data?.message || "Failed To Get Buses")
+            setError(error.response?.data?.message || "Failed To Get Stops")
 
         } finally {
 
-            setLoading(false)
+            setLoading(false);
 
         }
 
@@ -51,13 +49,13 @@ const BusList = () => {
 
     useEffect(() => {
 
-        fetchBuses();
+        fetchStops();
 
     }, [])
 
     if (loading) {
 
-        return <Loading message="Loading Buses..." />
+        return <Loading message="Loading Stops..." />
 
     }
 
@@ -90,54 +88,56 @@ const BusList = () => {
 
         try {
 
-            let response = await deleteBus(id);
+            let response = await deleteStop(id);
 
             toast.success(response.data.message);
 
-            fetchBuses();
+            setCurrentPage(1);
+
+            fetchStops();
 
         } catch (error) {
 
-            toast.error(error.response?.data?.message || "Failed To Delete Bus");
+            toast.error(error.response?.data?.message || "Failed to Delete Stop")
+
         }
 
     }
 
-    if (buses.length === 0) {
+    if (stops.length === 0) {
 
         return (
 
             <EmptyState
-                title="No Buses Found"
-                message="You Haven't Added Any Buses Yet. Create First Bus"
-                buttonText="Create Bus"
-                onClick={() => navigate("/admin/buses/create")}
+                title="No Stops Found"
+                message="You Haven't Added Any Stops Yet. Create First Stop"
+                buttonText="Create Stop"
+                onClick={() => navigate("/admin/stops/create")}
+                icon="🚏"
             />
         )
     }
 
-    let filteredBuses = buses.filter((bus) =>
+    let filteredStops = stops.filter((stop) =>
 
-        bus.busRegNumber?.toLowerCase().includes(search.toLowerCase()) ||
-        bus.busName?.toLowerCase().includes(search.toLowerCase())
+        stop.stopName?.toLowerCase().includes(search.toLowerCase())
 
     );
 
-    let busesPerPage = 10;
+    let stopsPerPage = 10;
 
-    let indexOfLastBus = currentPage * busesPerPage;
-    let indexOfFirstBus = indexOfLastBus - busesPerPage;
+    let indexOfLastStop = currentPage * stopsPerPage;
+    let indexOfFirstStop = indexOfLastStop - stopsPerPage;
 
-    let currentBuses = filteredBuses.slice(
+    let currentStops = filteredStops.slice(
 
-        indexOfFirstBus,
-        indexOfLastBus
+        indexOfFirstStop,
+        indexOfLastStop
     );
 
     let totalPages = Math.ceil(
-        filteredBuses.length / busesPerPage
+        filteredStops.length / stopsPerPage
     );
-
 
 
 
@@ -151,14 +151,14 @@ const BusList = () => {
 
                     <h1 className="text-2xl font-bold text-gray-800">
 
-                        Bus List
+                        Stop List
 
                     </h1>
 
                     <Button
-                        onClick={() => navigate("/admin/buses/create")}
+                        onClick={() => navigate("/admin/stops/create")}
                     >
-                        Add Bus
+                        Add Stop
                     </Button>
 
                 </div>
@@ -172,7 +172,7 @@ const BusList = () => {
                             setSearch(e.target.value)
                             setCurrentPage(1)
                         }}
-                        placeholder="Search Bus or Number..."
+                        placeholder="Search Stop Name..."
                         className="w-full md:w-96 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
 
@@ -180,11 +180,12 @@ const BusList = () => {
 
                 <div className="w-full overflow-x-auto">
 
-                    {search && filteredBuses.length === 0 ? (
+                    {search && filteredStops.length === 0 ? (
 
                         <EmptyState
                             title="No Result Found"
-                            message="No buses match your search. Try a different bus number or bus name"
+                            message="No stops match your search. Try a different stop name"
+                            icon="🚏"
 
                         />
 
@@ -199,22 +200,18 @@ const BusList = () => {
                                     <tr className="bg-gray-100">
 
                                         <th className="border border-gray-300 px-4 py-2 text-left">
-                                            Bus Number
+                                            Stop Name
                                         </th>
 
                                         <th className="border border-gray-300 px-4 py-2 text-left">
-                                            Bus Name
+                                            Latitude
                                         </th>
 
                                         <th className="border border-gray-300 px-4 py-2 text-left">
-                                            Bus Type
+                                            Longitude
                                         </th>
 
                                         <th className="border border-gray-300 px-4 py-2 text-left">
-                                            Status
-                                        </th>
-
-                                        <th className="border border-gray-300 px-4 py-2 text-left whitespace-nowrap">
                                             Action
                                         </th>
 
@@ -225,46 +222,41 @@ const BusList = () => {
 
                                 <tbody>
 
-                                    {currentBuses.map((bus) => (
+                                    {currentStops.map((stop) => (
 
-                                        <tr key={bus._id}>
+                                        <tr key={stop._id}>
 
                                             <td className="border border-gray-300 px-4 py-2">
-                                                {bus.busRegNumber}
+                                                {stop.stopName}
                                             </td>
 
                                             <td className="border border-gray-300 px-4 py-2">
-                                                {bus.busName}
+                                                {stop.latitude}
                                             </td>
 
                                             <td className="border border-gray-300 px-4 py-2">
-                                                {bus.busType?.busType}
-                                            </td>
-
-                                            <td className="border border-gray-300 px-4 py-2">
-                                                {bus.status}
+                                                {stop.longitude}
                                             </td>
 
                                             <td className="border border-gray-300 px-4 py-2">
 
                                                 <div className="flex flex-col gap-2 sm:flex-row">
 
-                                                    <Button onClick={() => navigate(`/admin/buses/${bus._id}`)}>
+                                                    <Button onClick={() => navigate(`/admin/stops/${stop._id}`)}>
                                                         View
                                                     </Button>
 
-                                                    <Button onClick={() => navigate(`/admin/buses/${bus._id}/edit`)}>
+                                                    <Button onClick={() => navigate(`/admin/stops/${stop._id}/edit`)}>
                                                         Edit
                                                     </Button>
 
-                                                    <Button onClick={() => handleDelete(bus._id)}>
+                                                    <Button onClick={() => handleDelete(stop._id)}>
                                                         Delete
                                                     </Button>
 
                                                 </div>
 
                                             </td>
-
 
                                         </tr>
 
@@ -291,8 +283,9 @@ const BusList = () => {
             </div>
 
         </>
+
     );
 
 };
 
-export default BusList;
+export default StopList;

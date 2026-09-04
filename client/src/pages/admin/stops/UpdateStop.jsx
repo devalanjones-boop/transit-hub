@@ -2,16 +2,18 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom"
-import { getRouteById, updateRoute } from "../../../services/routeService";
+import updateStopSchema from "../../../validations/stop/updateStopSchema";
+import { getStopById, updateStop } from "../../../services/stopService";
 import { toast } from "sonner";
+import Loading from "../../../components/common/Loading";
 import ErrorMessage from "../../../components/common/ErrorMessage";
 import Input from "../../../components/common/Input";
 import Button from "../../../components/common/Button";
-import updateRouteSchema from "../../../validations/route/updateRouteSchema";
-import Loading from "../../../components/common/Loading";
 
 
-const UpdateRoute = () => {
+
+
+const UpdateStop = () => {
 
     let { id } = useParams();
     let navigate = useNavigate();
@@ -24,19 +26,10 @@ const UpdateRoute = () => {
         register,
         handleSubmit,
         reset,
-        watch,
         formState: { errors }
     } = useForm({
-        resolver: yupResolver(updateRouteSchema)
+        resolver: yupResolver(updateStopSchema)
     })
-
-    let source = watch("source")
-    let destination = watch("destination")
-
-    let routeName =
-        source?.trim() && destination?.trim()
-            ? `${source.trim()} - ${destination.trim()}`
-            : "";
 
     let onSubmit = async (data) => {
 
@@ -44,21 +37,15 @@ const UpdateRoute = () => {
 
             setUpdating(true);
 
-            let routeData = {
-                source: data.source.trim(),
-                destination: data.destination.trim(),
-                routeName: `${data.source.trim()} - ${data.destination.trim()}`
-            }
-
-            let response = await updateRoute(id, routeData);
+            let response = await updateStop(id, data);
 
             toast.success(response.data.message);
 
-            navigate("/admin/routes");
+            navigate("/admin/stops");
 
         } catch (error) {
 
-            toast.error(error.response?.data?.message || "Failed to update Route")
+            toast.error(error.response?.data?.message || "Failed to Update Stop")
 
         } finally {
 
@@ -69,26 +56,27 @@ const UpdateRoute = () => {
 
     useEffect(() => {
 
-        let fetchRoute = async () => {
+        let fetchStop = async () => {
 
             try {
 
                 setLoading(true);
 
-                setError("");
+                setError("")
 
-                let response = await getRouteById(id);
+                let response = await getStopById(id);
 
                 reset({
 
-                    source: response.data.data.source,
-                    destination: response.data.data.destination,
+                    stopName: response.data.data.stopName,
+                    latitude: response.data.data.latitude,
+                    longitude: response.data.data.longitude,
 
                 });
 
             } catch (error) {
 
-                setError(error.response?.data?.message || "Failed to load Route")
+                setError(error.response?.data?.message || "Failed to load stop")
 
             } finally {
 
@@ -98,13 +86,13 @@ const UpdateRoute = () => {
 
         }
 
-        fetchRoute();
+        fetchStop();
 
     }, [id, reset]);
 
     if (loading) {
 
-        return <Loading message="Loading Route..." />
+        return <Loading message="Loading Stop..." />
 
     }
 
@@ -123,7 +111,7 @@ const UpdateRoute = () => {
             <div className="mb-6">
 
                 <Button
-                    onClick={() => navigate("/admin/routes")}
+                    onClick={() => navigate("/admin/stops")}
                 >
                     ← Back
                 </Button>
@@ -135,7 +123,7 @@ const UpdateRoute = () => {
             <div className="mb-6">
 
                 <h1 className="text-2xl font-bold text-gray-800">
-                    Update Route
+                    Update Stop
                 </h1>
 
             </div>
@@ -148,76 +136,78 @@ const UpdateRoute = () => {
                     onSubmit={handleSubmit(onSubmit)}
                     className="space-y-5">
 
-                    {/* Source */}
+                    {/* Stop Name */}
 
                     <div>
 
                         <label
-                            htmlFor="source"
+                            htmlFor="stopName"
                             className="block mb-2 font-medium text-gray-700"
                         >
 
-                            Source
+                            Stop Name
 
                         </label>
 
                         <Input
-                            id="source"
-                            {...register("source")}
-                            placeholder="Enter Source"
+                            id="stopName"
+                            {...register("stopName")}
+                            placeholder="Enter Stop Name"
                         />
 
-                        {errors.source && (
-                            <ErrorMessage message={errors.source.message} />
+                        {errors.stopName && (
+                            <ErrorMessage message={errors.stopName.message} />
                         )}
 
                     </div>
 
-                    {/* Destination */}
+                    {/* Latitude */}
 
                     <div>
 
                         <label
-                            htmlFor="destination"
+                            htmlFor="latitude"
                             className="block mb-2 font-medium text-gray-700"
                         >
 
-                            Destination
+                            Latitude
 
                         </label>
 
                         <Input
-                            id="destination"
-                            {...register("destination")}
-                            placeholder="Enter Destination"
+                            id="latitude"
+                            {...register("latitude")}
+                            placeholder="Enter Latitude"
                         />
 
-                        {errors.destination && (
-
-                            <ErrorMessage message={errors.destination.message} />
+                        {errors.latitude && (
+                            <ErrorMessage message={errors.latitude.message} />
                         )}
 
                     </div>
 
-                    {/* Route Name */}
+                    {/* Longitude */}
 
                     <div>
 
                         <label
-                            htmlFor="routeName"
+                            htmlFor="longitude"
                             className="block mb-2 font-medium text-gray-700"
                         >
 
-                            Route Name
+                            Longitude
 
                         </label>
 
                         <Input
-                            id="routeName"
-                            value={routeName}
-                            readOnly
-                            placeholder="Route name will be generated automatically"
+                            id="longitude"
+                            {...register("longitude")}
+                            placeholder="Enter Longitude"
                         />
+
+                        {errors.longitude && (
+                            <ErrorMessage message={errors.longitude.message} />
+                        )}
 
                     </div>
 
@@ -229,7 +219,7 @@ const UpdateRoute = () => {
                             type="submit"
                             disabled={updating}
                         >
-                            {updating ? "Updating..." : "Update Route"}
+                            {updating ? "Updating..." : "Update Stop"}
                         </Button>
 
                     </div>
@@ -245,4 +235,4 @@ const UpdateRoute = () => {
 
 };
 
-export default UpdateRoute;
+export default UpdateStop;

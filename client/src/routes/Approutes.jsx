@@ -11,6 +11,10 @@ import RouteList from "../pages/admin/routes/RouteList";
 import RouteDetails from "../pages/admin/routes/RouteDetails";
 import CreateRoute from "../pages/admin/routes/CreateRoute";
 import UpdateRoute from "../pages/admin/routes/UpdateRoute";
+import StopList from "../pages/admin/stops/StopList";
+import StopDetails from "../pages/admin/stops/StopDetails";
+import CreateStop from "../pages/admin/stops/CreateStop";
+import UpdateStop from "../pages/admin/stops/UpdateStop";
 
 
 const AppRoutes = () => {
@@ -40,6 +44,14 @@ const AppRoutes = () => {
                 <Route path={"routes/create"} element={<CreateRoute />} />
 
                 <Route path={"routes/:id/edit"} element={<UpdateRoute />} />
+
+                <Route path={"stops"} element={<StopList />} />
+
+                <Route path={"stops/:id"} element={<StopDetails />} />
+
+                <Route path={"stops/create"} element={<CreateStop />} />
+
+                <Route path={"stops/:id/edit"} element={<UpdateStop />} />
 
             </Route>
 
