@@ -19,11 +19,11 @@ const getAllBuses = async () => {
 };
 
 const getBusById = async (id) => {
-  const bus = await Bus.findById(id).populate("busType");
+  let bus = await Bus.findById(id).populate("busType");
 
   if (!bus) {
     const error = new Error("Bus not found");
-    error.statusCode = 404;
+    error.status = 404;
     throw error;
   }
 
