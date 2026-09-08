@@ -3,11 +3,11 @@ const { validateSchedule, validateUpdateSchedule } = require("../middleware/vali
 const { createSchedule, getAllSchedules, getScheduleById, updateSchedule, deleteSchedule, getUpcomingSchedulesByBus } = require("../controllers/scheduleController");
 const router = express.Router()
 
+router.get("/:busId/upcoming-schedules", getUpcomingSchedulesByBus)
 router.post("/", validateSchedule, createSchedule);
 router.get("/", getAllSchedules);
 router.get("/:id", getScheduleById);
 router.put("/:id", validateUpdateSchedule, updateSchedule);
 router.delete("/:id", deleteSchedule);
-router.get("/:busId/upcoming-schedules", getUpcomingSchedulesByBus)
 
 module.exports = router;

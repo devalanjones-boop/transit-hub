@@ -12,8 +12,13 @@ const stopScheduleSchema = new mongoose.Schema(
       type: Number,
       required: [true, "Stop order sequence is required"],
     },
+    arrivalTime: {
+      type: String,
+      required: [true, "Stop arrival time is required"],
+      watch: [/^([01]\d|2[0-3]):([0-5]\d)$/, "Please use 24-hour HH:mm format"],
+    },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const scheduleSchema = new mongoose.Schema(
@@ -33,7 +38,8 @@ const scheduleSchema = new mongoose.Schema(
       type: [stopScheduleSchema],
       validate: {
         validator: (v) => Array.isArray(v) && v.length >= 2,
-        message: "A schedule must have at least an origin and a destination stop",
+        message:
+          "A schedule must have at least an origin and a destination stop",
       },
     },
     arrivalTime: {
@@ -71,7 +77,7 @@ const scheduleSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 scheduleSchema.index({ routeId: 1, days: 1 });

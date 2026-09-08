@@ -9,7 +9,7 @@ let busValidationSchema = Joi.object({
     "string.empty": "Bus registration number is required",
     "any.required": "Bus registration number is required",
   }),
-  busType: Joi.string().hex().length(24).messages({
+  busType: Joi.string().trim().hex().length(24).required().messages({
     "string.empty": "Bus type is required",
     "string.hex": "Invalid Bus Type ID",
     "string.length": "Invalid Bus Type ID",

@@ -19,11 +19,11 @@ const getAllBuses = async () => {
 };
 
 const getBusById = async (id) => {
-  return await Bus.findById(id).populate("busType");
+  const bus = await Bus.findById(id).populate("busType");
 
   if (!bus) {
     const error = new Error("Bus not found");
-    error.status = 404;
+    error.statusCode = 404;
     throw error;
   }
 
@@ -34,7 +34,7 @@ const updateBus = async (id, busData) => {
   let bus = await Bus.findByIdAndUpdate(id, busData, {
     returnDocument: "after",
     runValidators: true,
-  });
+  }).populate("busType");
 
   if (!bus) {
     const error = new Error("Bus not found");
