@@ -307,6 +307,12 @@ const ScheduleDetails = () => {
 
                                     </th>
 
+                                    <th className="px-4 py-3 text-sm font-semibold text-gray-600">
+
+                                        Expected Arrival
+
+                                    </th>
+
                                 </tr>
 
                             </thead>
@@ -329,6 +335,12 @@ const ScheduleDetails = () => {
                                         <td className="px-4 py-3 text-sm text-gray-700">
 
                                             {stop.stopId?.stopName || "-"}
+
+                                        </td>
+
+                                        <td className="px-4 py-3 text-sm text-gray-700">
+
+                                            {stop.arrivalTime || "-"}
 
                                         </td>
 
