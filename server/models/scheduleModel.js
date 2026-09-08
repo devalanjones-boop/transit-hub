@@ -15,7 +15,7 @@ const stopScheduleSchema = new mongoose.Schema(
     arrivalTime: {
       type: String,
       required: [true, "Stop arrival time is required"],
-      watch: [/^([01]\d|2[0-3]):([0-5]\d)$/, "Please use 24-hour HH:mm format"],
+      match: [/^([01]\d|2[0-3]):([0-5]\d)$/, "Please use 24-hour HH:mm format"],
     },
   },
   { _id: false },
