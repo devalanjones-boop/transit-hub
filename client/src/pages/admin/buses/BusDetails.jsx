@@ -174,7 +174,7 @@ const BusDetails = () => {
                     <p>
 
                         <strong> Bus Type:</strong>{" "}
-                        {bus.busType}
+                        {bus?.busType?.busType || "-"}
                     </p>
 
                     <p>

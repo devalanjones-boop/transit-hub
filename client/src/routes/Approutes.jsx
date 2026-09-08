@@ -15,6 +15,8 @@ import StopList from "../pages/admin/stops/StopList";
 import StopDetails from "../pages/admin/stops/StopDetails";
 import CreateStop from "../pages/admin/stops/CreateStop";
 import UpdateStop from "../pages/admin/stops/UpdateStop";
+import ScheduleList from "../pages/admin/schedules/ScheduleList";
+import ScheduleDetails from "../pages/admin/schedules/ScheduleDetails";
 
 
 const AppRoutes = () => {
@@ -52,6 +54,10 @@ const AppRoutes = () => {
                 <Route path={"stops/create"} element={<CreateStop />} />
 
                 <Route path={"stops/:id/edit"} element={<UpdateStop />} />
+
+                <Route path={"schedules"} element={<ScheduleList />} />
+
+                <Route path={'schedules/:id'} element={<ScheduleDetails />} />
 
             </Route>
 
