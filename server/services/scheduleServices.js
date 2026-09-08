@@ -1,8 +1,8 @@
-const Schedule = require("../models/scheduleModel")
+const Schedule = require("../models/scheduleModel");
 
 const createSchedule = async (data) => {
-    return await Schedule.create(data)
-}
+  return await Schedule.create(data);
+};
 const getAllSchedules = async () => {
   return await Schedule.find()
     .populate("busId")
@@ -13,7 +13,12 @@ const getAllSchedules = async () => {
 
 const getScheduleById = async (id) => {
   const schedule = await Schedule.findById(id)
-    .populate("busId")
+    .populate({
+      path: "busId",
+      populate: {
+        path: "bustype",
+      },
+    })
     .populate("routeId")
     .populate("stops.stopId")
     .lean();

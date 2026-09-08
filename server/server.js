@@ -20,7 +20,7 @@ let busTypeRouter = require("./routes/busTypeRoutes")
 app.use("/buses", busRouter)
 app.use("/routes", routeRouter)
 app.use("/stops", stopRouter)
-app.use("/shedules", scheduleRouter)
+app.use("/schedules", scheduleRouter)
 app.use("/busType", busTypeRouter)
 
 const port = process.env.PORT
