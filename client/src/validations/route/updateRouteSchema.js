@@ -1,7 +1,7 @@
 
 import * as yup from "yup";
 
-const createRouteSchema = yup.object({
+const updateRouteSchema = yup.object({
 
     source: yup
         .string()
@@ -24,4 +24,4 @@ const createRouteSchema = yup.object({
 
 });
 
-export default createRouteSchema;
+export default updateRouteSchema;

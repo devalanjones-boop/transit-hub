@@ -7,8 +7,9 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup";
 import { createBus } from "../../../services/busService";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { getAllBusTypes } from "../../../services/fareService";
 
 
 
@@ -26,6 +27,7 @@ const CreateBus = () => {
     })
 
     let [loading, setLoading] = useState(false)
+    let [busTypes, setBusTypes] = useState([]);
 
     let onSubmit = async (data) => {
 
@@ -49,6 +51,28 @@ const CreateBus = () => {
         }
 
     }
+
+    useEffect(() => {
+
+        let fetchBusTypes = async () => {
+
+            try {
+
+                let response = await getAllBusTypes();
+
+                setBusTypes(response.data.data);
+
+            } catch (error) {
+
+                toast.error(error.response?.data?.message || "Failed to load bus types");
+
+            }
+
+        };
+
+        fetchBusTypes();
+
+    }, []);
 
     return (
 
@@ -156,18 +180,10 @@ const CreateBus = () => {
                                     value: "",
                                     label: "Select Bus Type"
                                 },
-                                {
-                                    value: "ordinary",
-                                    label: "Ordinary"
-                                },
-                                {
-                                    value: "express",
-                                    label: "Express"
-                                },
-                                {
-                                    value: "super_fast",
-                                    label: "Super Fast"
-                                }
+                                ...busTypes.map((type) => ({
+                                    value: type._id,
+                                    label: type.busType
+                                }))
                             ]}
                         />
 

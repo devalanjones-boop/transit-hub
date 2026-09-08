@@ -10,6 +10,7 @@ import Input from "../../../components/common/Input";
 import Select from "../../../components/common/Select";
 import updateBusSchema from "../../../validations/bus/updateBusSchema";
 import { toast } from "sonner";
+import { getAllBusTypes } from "../../../services/fareService";
 
 
 
@@ -20,7 +21,8 @@ const UpdateBus = () => {
 
     let [loading, setLoading] = useState(true);
     let [updating, setUpdating] = useState(false);
-    let [error, setError] = useState("")
+    let [error, setError] = useState("");
+    let [busTypes, setBusTypes] = useState([]);
 
     const {
         register,
@@ -56,7 +58,7 @@ const UpdateBus = () => {
 
     useEffect(() => {
 
-        let fetchBus = async () => {
+        let fetchData = async () => {
 
             try {
 
@@ -64,14 +66,22 @@ const UpdateBus = () => {
 
                 setError("");
 
-                let response = await getBusById(id);
+                let [busResponse, busTypeResponse] = await Promise.all([
+                    getBusById(id),
+                    getAllBusTypes()
+                ]);
+
+                let bus = busResponse.data.data;
+                let types = busTypeResponse.data.data;
+
+                setBusTypes(types);
 
                 reset({
 
-                    busRegNumber: response.data.data.busRegNumber,
-                    busName: response.data.data.busName,
-                    busType: response.data.data.busType,
-                    status: response.data.data.status
+                    busRegNumber: bus.busRegNumber,
+                    busName: bus.busName,
+                    busType: bus.busType?._id || bus.busType,
+                    status: bus.status
 
                 });
 
@@ -87,9 +97,9 @@ const UpdateBus = () => {
 
         }
 
-        fetchBus();
+        fetchData();
 
-    }, [id])
+    }, [id, reset]);
 
     if (loading) {
 
@@ -137,11 +147,14 @@ const UpdateBus = () => {
 
                 <div>
 
-                    <label className="block mb-2 font-medium text-gray-700">
+                    <label
+                        htmlFor="busRegNumber"
+                        className="block mb-2 font-medium text-gray-700">
                         Bus Registration Number
                     </label>
 
                     <Input
+                        id="busRegNumber"
                         {...register("busRegNumber")}
                         placeholder="Enter Bus Registration Number"
                     />
@@ -156,11 +169,14 @@ const UpdateBus = () => {
 
                 <div>
 
-                    <label className="block mb-2 font-medium text-gray-700">
+                    <label
+                        htmlFor="busName"
+                        className="block mb-2 font-medium text-gray-700">
                         Bus Name
                     </label>
 
                     <Input
+                        id="busName"
                         {...register("busName")}
                         placeholder="Enter Bus Name"
                     />
@@ -175,29 +191,24 @@ const UpdateBus = () => {
 
                 <div>
 
-                    <label className="block mb-2 font-medium text-gray-700">
+                    <label
+                        htmlFor="busType"
+                        className="block mb-2 font-medium text-gray-700">
                         Bus Type
                     </label>
 
                     <Select
+                        id="busType"
                         {...register("busType")}
                         options={[
                             {
                                 value: "",
                                 label: "Select Bus Type"
                             },
-                            {
-                                value: "ordinary",
-                                label: "Ordinary"
-                            },
-                            {
-                                value: "express",
-                                label: "Express"
-                            },
-                            {
-                                value: "super_fast",
-                                label: "Super Fast"
-                            }
+                            ...busTypes.map((type) => ({
+                                value: type._id,
+                                label: type.busType
+                            }))
                         ]}
 
                     />
@@ -212,11 +223,14 @@ const UpdateBus = () => {
 
                 <div>
 
-                    <label className="block mb-2 font-medium text-gray-700">
+                    <label
+                        htmlFor="status"
+                        className="block mb-2 font-medium text-gray-700">
                         Status
                     </label>
 
                     <Select
+                        id="status"
                         {...register("status")}
                         options={[
                             {

@@ -24,4 +24,4 @@ export const updateBus = async (id, busData) => {
 export const deleteBus = async (id) => {
 
     return await api.delete(`/buses/${id}`)
-}
+};

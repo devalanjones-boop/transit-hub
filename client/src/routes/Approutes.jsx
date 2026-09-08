@@ -10,6 +10,13 @@ import UpdateBus from "../pages/admin/buses/UpdateBus";
 import RouteList from "../pages/admin/routes/RouteList";
 import RouteDetails from "../pages/admin/routes/RouteDetails";
 import CreateRoute from "../pages/admin/routes/CreateRoute";
+import UpdateRoute from "../pages/admin/routes/UpdateRoute";
+import StopList from "../pages/admin/stops/StopList";
+import StopDetails from "../pages/admin/stops/StopDetails";
+import CreateStop from "../pages/admin/stops/CreateStop";
+import UpdateStop from "../pages/admin/stops/UpdateStop";
+import ScheduleList from "../pages/admin/schedules/ScheduleList";
+import ScheduleDetails from "../pages/admin/schedules/ScheduleDetails";
 
 
 const AppRoutes = () => {
@@ -37,6 +44,20 @@ const AppRoutes = () => {
                 <Route path={"routes/:id"} element={<RouteDetails />} />
 
                 <Route path={"routes/create"} element={<CreateRoute />} />
+
+                <Route path={"routes/:id/edit"} element={<UpdateRoute />} />
+
+                <Route path={"stops"} element={<StopList />} />
+
+                <Route path={"stops/:id"} element={<StopDetails />} />
+
+                <Route path={"stops/create"} element={<CreateStop />} />
+
+                <Route path={"stops/:id/edit"} element={<UpdateStop />} />
+
+                <Route path={"schedules"} element={<ScheduleList />} />
+
+                <Route path={'schedules/:id'} element={<ScheduleDetails />} />
 
             </Route>
 
