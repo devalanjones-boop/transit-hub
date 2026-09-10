@@ -29,12 +29,13 @@ const scheduleValidationSchema = Joi.object({
       Joi.object({
         stopId: objectId.required(),
         stopSequence: Joi.number().integer().min(1).required(),
-      })
+      }),
     )
     .min(2)
     .required()
     .messages({
-      "array.min": "A schedule must have at least an origin and a destination stop",
+      "array.min":
+        "A schedule must have at least an origin and a destination stop",
     }),
   arrivalTime: timeFormat.required(),
   departureTime: timeFormat.required(),
@@ -56,12 +57,22 @@ const updateScheduleValidationSchema = Joi.object({
       Joi.object({
         stopId: objectId.required(),
         stopSequence: Joi.number().integer().min(1).required(),
-      })
+        expectedArrivalTime: Joi.string()
+          .pattern(/^([01]\d|2[0-3]):([0-5]\d)$/)
+          .required()
+          .messages({
+            "string.pattern.base": "Please use 24-hour HH:mm format",
+            "any.required": "Stop arrival time is required",
+          }),
+      }),
     )
     .min(2),
   arrivalTime: timeFormat,
   departureTime: timeFormat,
-  days: Joi.array().items(Joi.string().valid(...daysEnum)).min(1).unique(),
+  days: Joi.array()
+    .items(Joi.string().valid(...daysEnum))
+    .min(1)
+    .unique(),
   status: Joi.string().valid(...statusEnum),
 }).min(1);
 
