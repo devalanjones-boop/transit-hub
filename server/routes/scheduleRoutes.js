@@ -10,4 +10,5 @@ router.get("/:id", getScheduleById);
 router.put("/:id", validateUpdateSchedule, updateSchedule);
 router.delete("/:id", deleteSchedule);
 
+
 module.exports = router;
