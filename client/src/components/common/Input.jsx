@@ -10,6 +10,7 @@ const Input = forwardRef(({
     name,
     value,
     onChange,
+    checked,
     placeholder = "",
     className = "",
     disabled = false
@@ -26,6 +27,7 @@ const Input = forwardRef(({
             name={name}
             value={value}
             onChange={onChange}
+            checked={checked}
             placeholder={placeholder}
             disabled={disabled}
             className={`w-full
