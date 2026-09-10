@@ -309,7 +309,7 @@ const ScheduleDetails = () => {
 
                                     <th className="px-4 py-3 text-sm font-semibold text-gray-600">
 
-                                        Expected Arrival
+                                        Expected Arrival Time
 
                                     </th>
 
@@ -340,7 +340,7 @@ const ScheduleDetails = () => {
 
                                         <td className="px-4 py-3 text-sm text-gray-700">
 
-                                            {stop.arrivalTime || "-"}
+                                            {stop.estimatedTime || "-"}
 
                                         </td>
 

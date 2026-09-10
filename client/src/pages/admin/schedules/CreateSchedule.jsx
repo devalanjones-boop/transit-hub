@@ -10,7 +10,8 @@ import Select from "../../../components/common/Select";
 import ErrorMessage from "../../../components/common/ErrorMessage";
 import Button from "../../../components/common/Button";
 import { toast } from "sonner";
-import Input from "../../../components/common/Input"
+import Input from "../../../components/common/Input";
+import { createSchedule } from "../../../services/scheduleService";
 
 
 
@@ -24,9 +25,17 @@ const CreateSchedule = () => {
     let {
         register,
         handleSubmit,
+        setValue,
+        watch,
+        trigger,
         formState: { errors },
     } = useForm({
-        resolver: yupResolver(createScheduleSchema)
+        resolver: yupResolver(createScheduleSchema),
+        defaultValues: {
+            stops: [],
+            days: [],
+            status: ""
+        }
     })
 
     let [buses, setBuses] = useState([]);
@@ -34,6 +43,26 @@ const CreateSchedule = () => {
     let [stops, setStops] = useState([]);
     let [selectedStops, setSelectedStops] = useState([]);
     let [loading, setLoading] = useState(false);
+    let [draggedIndex, setDraggedIndex] = useState(null);
+    let days = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+    ];
+
+    let [selectedDays, setSelectedDays] = useState([]);
+
+    let statusOptions = [
+        { value: "", label: "Select Status" },
+        { value: "ON_TIME", label: "On Time" },
+        { value: "DELAYED", label: "Delayed" },
+        { value: "CANCELLED", label: "Cancelled" },
+        { value: "COMPLETED", label: "Completed" }
+    ];
 
 
     useEffect(() => {
@@ -72,29 +101,167 @@ const CreateSchedule = () => {
             (selectedStops) => selectedStops._id === stop._id
         );
 
+        let newSelectedStops;
+
         if (isSelected) {
 
-            setSelectedStops(
-                selectedStops.filter(
-                    (selectedStops) => selectedStops._id !== stop._id
-                )
-
+            newSelectedStops = selectedStops.filter(
+                (selectedStops) => selectedStops._id !== stop._id
             );
 
         } else {
 
-            setSelectedStops([
+            newSelectedStops = [
                 ...selectedStops,
                 stop
-            ]);
+            ];
 
         }
+
+        setSelectedStops(newSelectedStops);
+
+        let currentStopValues = watch("stops") || [];
+
+        let newStopValues = newSelectedStops.map(
+            (selectedStop, index) => {
+
+                let existingStop = currentStopValues.find(
+                    (stopValue) =>
+                        stopValue.stopId === selectedStop._id
+                );
+
+                return {
+                    stopId: selectedStop._id,
+                    stopSequence: index + 1,
+                    estimatedTime: existingStop?.estimatedTime || ""
+                };
+
+            }
+        );
+
+        setValue("stops", newStopValues, {
+            shouldValidate: true,
+            shouldDirty: true
+        });
+
+        trigger("stops");
+
+    };
+
+    let handleDrop = (dropIndex) => {
+
+        if (draggedIndex === null || draggedIndex === dropIndex) {
+            return;
+        }
+
+        let reorderedStops = [...selectedStops];
+
+        let draggedStop = reorderedStops[draggedIndex];
+
+        reorderedStops.splice(draggedIndex, 1);
+        reorderedStops.splice(dropIndex, 0, draggedStop);
+
+        setSelectedStops(reorderedStops);
+
+        let currentStopValues = watch("stops") || [];
+
+        let reorderedStopValues = reorderedStops.map((stop, index) => {
+
+            let oldIndex = selectedStops.findIndex(
+                (selectedStop) => selectedStop._id === stop._id
+            );
+
+            return {
+
+                stopId: stop._id,
+                stopSequence: index + 1,
+                estimatedTime: currentStopValues[oldIndex]?.estimatedTime || ""
+            };
+
+        });
+
+        setValue("stops", reorderedStopValues);
+
+        setDraggedIndex(null);
+
+    }
+
+    let handleDayChange = (day) => {
+
+        let isSelected = selectedDays.includes(day);
+
+        let newSelectedDays;
+
+        if (isSelected) {
+
+            newSelectedDays = selectedDays.filter(
+                (selectedDay) => selectedDay !== day
+            );
+
+        } else {
+
+            newSelectedDays = [
+                ...selectedDays,
+                day
+            ];
+
+        }
+
+        setSelectedDays(newSelectedDays);
+
+        setValue("days", newSelectedDays, {
+            shouldDirty: true
+        });
+
+        trigger("days");
+
+    };
+
+    let handleAllDaysChange = () => {
+
+        let newSelectedDays;
+
+        if (selectedDays.length === days.length) {
+
+            newSelectedDays = [];
+
+        } else {
+
+            newSelectedDays = [...days];
+
+        }
+
+        setSelectedDays(newSelectedDays);
+
+        setValue("days", newSelectedDays, {
+            shouldDirty: true
+        });
+
+        trigger("days")
 
     };
 
     let onSubmit = async (data) => {
 
-        console.log(data);
+        try {
+
+            setLoading(true);
+
+            let response = await createSchedule(data);
+
+            toast.success(response.data.message);
+
+            navigate("/admin/schedules");
+
+        } catch (error) {
+
+            toast.error(error.response?.data?.message || "Failed to create schedule");
+
+        } finally {
+
+            setLoading(false);
+
+        }
 
     }
 
@@ -118,7 +285,9 @@ const CreateSchedule = () => {
             value: route._id,
             label: route.routeName
         }))
+
     ];
+
 
     return (
 
@@ -252,9 +421,17 @@ const CreateSchedule = () => {
 
                         <div className="mt-6">
 
-                            <h3 className="font-medium text-gray-700 mb-3">
-                                Selected Stops
-                            </h3>
+                            <div className="flex items-center mb-3">
+
+                                <h3 className="font-medium text-gray-700">
+                                    Selected Stops
+                                </h3>
+
+                                <span className="font-medium text-gray-700 ml-auto w-40">
+                                    Expected Arrival Time
+                                </span>
+
+                            </div>
 
                             {selectedStops.length > 0 ? (
 
@@ -264,16 +441,39 @@ const CreateSchedule = () => {
 
                                         <div
                                             key={stop._id}
+                                            draggable
+                                            onDragStart={() => setDraggedIndex(index)}
+                                            onDragOver={(event) => event.preventDefault()}
+                                            onDrop={() => handleDrop(index)}
                                             className="flex items-center gap-4 border border-gray-300 rounded-lg px-4 py-3"
                                         >
+
+                                            <span className="cursor-move text-gray-500">
+                                                ☷
+                                            </span>
 
                                             <span className="font-medium text-gray-700 w-8">
                                                 {index + 1}
                                             </span>
 
-                                            <span className="text-gray-700">
+                                            <span className="text-gray-700 flex-1">
                                                 {stop.stopName}
                                             </span>
+
+                                            <div className="w-40">
+
+                                                <Input
+                                                    type="time"
+                                                    {...register(`stops.${index}.estimatedTime`)}
+                                                />
+
+                                                {errors.stops?.[index]?.estimatedTime && (
+                                                    <ErrorMessage
+                                                        message={errors.stops[index].estimatedTime.message}
+                                                    />
+                                                )}
+
+                                            </div>
 
                                         </div>
 
@@ -287,6 +487,156 @@ const CreateSchedule = () => {
                                     No stops selected
                                 </p>
 
+                            )}
+
+                            {errors.stops && !Array.isArray(errors.stops) && (
+                                <ErrorMessage message={errors.stops.message} />
+                            )}
+
+                        </div>
+
+                    </div>
+
+                    {/* Days */}
+
+                    <div>
+
+                        <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                            Days
+                        </h2>
+
+                        <div className="space-y-3">
+
+                            {/* All Days */}
+
+                            <label className="flex items-center gap-3">
+
+                                <Input
+                                    type="checkbox"
+                                    checked={selectedDays.length === days.length}
+                                    onChange={handleAllDaysChange}
+                                    className="!w-4 !h-4"
+                                />
+
+                                <span className="text-gray-700">
+                                    All Days
+                                </span>
+
+                            </label>
+
+                            {/* Individual Days */}
+
+                            <div className="grid grid-cols-3 gap-3">
+
+                                {days.map((day) => (
+
+                                    <label
+                                        key={day}
+                                        className="flex items-center gap-3"
+                                    >
+
+                                        <Input
+                                            type="checkbox"
+                                            checked={selectedDays.includes(day)}
+                                            onChange={() => handleDayChange(day)}
+                                            className="!w-4 !h-4"
+                                        />
+
+                                        <span className="text-gray-700">
+                                            {day}
+                                        </span>
+
+                                    </label>
+
+                                ))}
+
+                            </div>
+
+                            {errors.days && (
+                                <ErrorMessage message={errors.days.message} />
+                            )}
+
+                        </div>
+
+                    </div>
+
+                    {/* Schedule Information */}
+
+                    <div>
+
+                        <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                            Schedule Information
+                        </h2>
+
+                        <div className="grid grid-cols-2 gap-6">
+
+                            {/* Departure Time */}
+
+                            <div>
+
+                                <label
+                                    htmlFor="departureTime"
+                                    className="block mb-2 font-medium text-gray-700"
+                                >
+                                    Departure Time
+                                </label>
+
+                                <Input
+                                    id="departureTime"
+                                    type="time"
+                                    {...register("departureTime")}
+                                />
+
+                                {errors.departureTime && (
+                                    <ErrorMessage message={errors.departureTime.message} />
+                                )}
+
+                            </div>
+
+                            {/* Arrival Time */}
+
+                            <div>
+
+                                <label
+                                    htmlFor="arrivalTime"
+                                    className="block mb-2 font-medium text-gray-700"
+                                >
+                                    Arrival Time
+                                </label>
+
+                                <Input
+                                    id="arrivalTime"
+                                    type="time"
+                                    {...register("arrivalTime")}
+                                />
+
+                                {errors.arrivalTime && (
+                                    <ErrorMessage message={errors.arrivalTime.message} />
+                                )}
+
+                            </div>
+
+                        </div>
+
+                        {/* Status */}
+
+                        <div className="mt-5">
+
+                            <label
+                                htmlFor="status"
+                                className="block mb-2 font-medium text-gray-700"
+                            >
+                                Status
+                            </label>
+
+                            <Select
+                                id="status"
+                                {...register("status")}
+                                options={statusOptions}
+                            />
+
+                            {errors.status && (
+                                <ErrorMessage message={errors.status.message} />
                             )}
 
                         </div>

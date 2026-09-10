@@ -25,7 +25,7 @@ const createScheduleSchema = yup.object({
                     .number()
                     .required("Stop sequence is required"),
 
-                arrivalTime: yup
+                estimatedTime: yup
                     .string()
                     .required("Expected arrival time is required")
                     .matches(
@@ -56,7 +56,7 @@ const createScheduleSchema = yup.object({
         .min(1, "At least one operational day is required")
         .required("Days are required"),
 
-        status: yup
+    status: yup
         .string()
         .oneOf(
             ["ON_TIME", "DELAYED", "CANCELLED", "COMPLETED"],
