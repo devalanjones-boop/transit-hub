@@ -12,7 +12,7 @@ const stopScheduleSchema = new mongoose.Schema(
       type: Number,
       required: [true, "Stop order sequence is required"],
     },
-    estimatedTime: {
+    expectedArrivalTime: {
       type: String,
       required: [true, "Stop arrival time is required"],
       match: [/^([01]\d|2[0-3]):([0-5]\d)$/, "Please use 24-hour HH:mm format"],
