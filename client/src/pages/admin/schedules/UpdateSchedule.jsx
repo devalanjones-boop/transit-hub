@@ -1,25 +1,26 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import createScheduleSchema from "../../../validations/schedule/createScheduleSchema";
+import { Controller, useForm } from "react-hook-form";
+import { useNavigate, useParams } from "react-router-dom";
+import updateScheduleSchema from "../../../validations/schedule/updateScheduleSchema";
 import { useEffect, useState } from "react";
+import { getScheduleById, updateSchedule } from "../../../services/scheduleService";
 import { getAllBuses } from "../../../services/busService";
 import { getAllRoutes } from "../../../services/routeService";
 import { getAllStops } from "../../../services/stopService";
-import Select from "../../../components/common/Select";
+import Loading from "../../../components/common/Loading";
 import ErrorMessage from "../../../components/common/ErrorMessage";
 import Button from "../../../components/common/Button";
-import { toast } from "sonner";
+import Select from "../../../components/common/Select";
 import Input from "../../../components/common/Input";
-import { createSchedule } from "../../../services/scheduleService";
+import { toast } from "sonner";
 
 
 
 
 
+const UpdateSchedule = () => {
 
-const CreateSchedule = () => {
-
+    let { id } = useParams();
     let navigate = useNavigate();
 
     let {
@@ -28,22 +29,26 @@ const CreateSchedule = () => {
         setValue,
         watch,
         trigger,
-        formState: { errors },
+        control,
+        formState: { errors }
     } = useForm({
-        resolver: yupResolver(createScheduleSchema),
+        resolver: yupResolver(updateScheduleSchema),
         defaultValues: {
             stops: [],
             days: [],
             status: ""
         }
-    })
+    });
 
     let [buses, setBuses] = useState([]);
     let [routes, setRoutes] = useState([]);
     let [stops, setStops] = useState([]);
+    let [loading, setLoading] = useState(true);
+    let [updating, setUpdating] = useState(false);
+    let [error, setError] = useState("");
     let [selectedStops, setSelectedStops] = useState([]);
-    let [loading, setLoading] = useState(false);
     let [draggedIndex, setDraggedIndex] = useState(null);
+    let [selectedDays, setSelectedDays] = useState([]);
     let days = [
         "Monday",
         "Tuesday",
@@ -54,8 +59,6 @@ const CreateSchedule = () => {
         "Sunday"
     ];
 
-    let [selectedDays, setSelectedDays] = useState([]);
-
     let statusOptions = [
         { value: "", label: "Select Status" },
         { value: "ON_TIME", label: "On Time" },
@@ -64,49 +67,93 @@ const CreateSchedule = () => {
         { value: "COMPLETED", label: "Completed" }
     ];
 
-
     useEffect(() => {
 
         let fetchData = async () => {
 
             try {
 
-                let [busResponse, routeResponse, stopResponse] = await Promise.all([
+                let [
+                    scheduleResponse,
+                    busResponse,
+                    routeResponse,
+                    stopResponse
+                ] = await Promise.all([
+                    getScheduleById(id),
                     getAllBuses(),
                     getAllRoutes(),
                     getAllStops()
                 ]);
 
+                let schedule = scheduleResponse.data.data;
+
                 setBuses(busResponse.data.data);
                 setRoutes(routeResponse.data.data);
                 setStops(stopResponse.data.data);
 
+                setSelectedStops(
+                    schedule.stops.map((scheduleStop) => scheduleStop.stopId)
+                );
+
+                setValue("busId", schedule.busId?._id || schedule.busId);
+                setValue("routeId", schedule.routeId?._id || schedule.routeId);
+                setValue("arrivalTime", schedule.arrivalTime);
+                setValue("departureTime", schedule.departureTime);
+                setValue("days", schedule.days);
+                setValue("status", schedule.status);
+                setValue(
+                    "stops",
+                    schedule.stops.map((scheduleStop) => ({
+                        stopId: scheduleStop.stopId?._id || scheduleStop.stopId,
+                        stopSequence: scheduleStop.stopSequence,
+                        expectedArrivalTime: scheduleStop.expectedArrivalTime
+                    }))
+                );
+
+                setSelectedDays(schedule.days);
+
             } catch (error) {
 
-                toast.error(
+                setError(error.response?.data?.message || "Failed to load schedule");
 
-                    error.response?.data?.message || "Failed to load buses and routes"
+            } finally {
 
-                );
+                setLoading(false);
+
             }
+
         };
 
         fetchData();
 
-    }, []);
+    }, [id, setValue]);
+
+    if (loading) {
+
+        return <Loading message="Loading..." />
+
+    }
+
+    if (error) {
+
+        return <ErrorMessage message={error} />
+
+    }
 
     let handleStopChange = (stop) => {
 
         let isSelected = selectedStops.some(
-            (selectedStops) => selectedStops._id === stop._id
+            (selectedStop) => selectedStop._id === stop._id
         );
+
+        let currentStopValues = watch("stops") || [];
 
         let newSelectedStops;
 
         if (isSelected) {
 
             newSelectedStops = selectedStops.filter(
-                (selectedStops) => selectedStops._id !== stop._id
+                (selectedStop) => selectedStop._id !== stop._id
             );
 
         } else {
@@ -120,8 +167,6 @@ const CreateSchedule = () => {
 
         setSelectedStops(newSelectedStops);
 
-        let currentStopValues = watch("stops") || [];
-
         let newStopValues = newSelectedStops.map(
             (selectedStop, index) => {
 
@@ -133,14 +178,15 @@ const CreateSchedule = () => {
                 return {
                     stopId: selectedStop._id,
                     stopSequence: index + 1,
-                    expectedArrivalTime: existingStop?.expectedArrivalTime || ""
+                    expectedArrivalTime:
+                        existingStop?.expectedArrivalTime || ""
                 };
 
             }
+
         );
 
         setValue("stops", newStopValues, {
-            shouldValidate: true,
             shouldDirty: true
         });
 
@@ -151,6 +197,7 @@ const CreateSchedule = () => {
     let handleDrop = (dropIndex) => {
 
         if (draggedIndex === null || draggedIndex === dropIndex) {
+
             return;
         }
 
@@ -172,7 +219,6 @@ const CreateSchedule = () => {
             );
 
             return {
-
                 stopId: stop._id,
                 stopSequence: index + 1,
                 expectedArrivalTime: currentStopValues[oldIndex]?.expectedArrivalTime || ""
@@ -184,7 +230,7 @@ const CreateSchedule = () => {
 
         setDraggedIndex(null);
 
-    }
+    };
 
     let handleDayChange = (day) => {
 
@@ -217,7 +263,7 @@ const CreateSchedule = () => {
 
     };
 
-    let handleAllDaysChange = () => {
+    let handleAllDayChange = () => {
 
         let newSelectedDays;
 
@@ -237,7 +283,7 @@ const CreateSchedule = () => {
             shouldDirty: true
         });
 
-        trigger("days")
+        trigger("days");
 
     };
 
@@ -245,9 +291,9 @@ const CreateSchedule = () => {
 
         try {
 
-            setLoading(true);
+            setUpdating(true);
 
-            let response = await createSchedule(data);
+            let response = await updateSchedule(id, data);
 
             toast.success(response.data.message);
 
@@ -255,15 +301,15 @@ const CreateSchedule = () => {
 
         } catch (error) {
 
-            toast.error(error.response?.data?.message || "Failed to create schedule");
+            toast.error(error.response?.data?.message || "Failed to update schedule");
 
         } finally {
 
-            setLoading(false);
+            setUpdating(false);
 
         }
 
-    }
+    };
 
     let busOptions = [
         {
@@ -285,9 +331,7 @@ const CreateSchedule = () => {
             value: route._id,
             label: route.routeName
         }))
-
     ];
-
 
     return (
 
@@ -297,10 +341,11 @@ const CreateSchedule = () => {
 
             <div className="mb-6">
 
+
                 <Button
+                    type="button"
                     onClick={() => navigate("/admin/schedules")}
                 >
-
                     ← Back
                 </Button>
 
@@ -310,8 +355,8 @@ const CreateSchedule = () => {
 
             <div className="mb-6">
 
-                <h1 className="text-2xl font-bold text-gray-800">
-                    Create Schedule
+                <h1 className="text-2xl font-bold text-gray-800 mt-6">
+                    Update Schedule
                 </h1>
 
             </div>
@@ -322,7 +367,8 @@ const CreateSchedule = () => {
 
                 <form
                     onSubmit={handleSubmit(onSubmit)}
-                    className="space-y-5">
+                    className="space-y-5"
+                >
 
                     {/* Bus */}
 
@@ -332,9 +378,7 @@ const CreateSchedule = () => {
                             htmlFor="busId"
                             className="block mb-2 font-medium text-gray-700"
                         >
-
                             Bus
-
                         </label>
 
                         <Select
@@ -357,9 +401,7 @@ const CreateSchedule = () => {
                             htmlFor="routeId"
                             className="block mb-2 font-medium text-gray-700"
                         >
-
                             Route
-
                         </label>
 
                         <Select
@@ -400,8 +442,8 @@ const CreateSchedule = () => {
                                         <Input
                                             type="checkbox"
                                             checked={selectedStops.some(
-                                                (selectedStops) =>
-                                                    selectedStops._id === stop._id
+                                                (selectedStop) =>
+                                                    selectedStop._id === stop._id
                                             )}
                                             onChange={() => handleStopChange(stop)}
                                             className="!w-4 !h-4"
@@ -412,7 +454,6 @@ const CreateSchedule = () => {
                                         </span>
 
                                     </label>
-
                                 ))}
 
                             </div>
@@ -421,9 +462,9 @@ const CreateSchedule = () => {
 
                         <div className="mt-6">
 
-                            <div className="flex items-center mb-3">
+                            <div className="flex items-center gap-4 px-4 mb-3">
 
-                                <h3 className="font-medium text-gray-700">
+                                <h3 className="font-medium text-gray-700 w-8">
                                     Selected Stops
                                 </h3>
 
@@ -464,19 +505,23 @@ const CreateSchedule = () => {
 
                                                 <Input
                                                     type="time"
-                                                    {...register(`stops.${index}.expectedArrivalTime`)}
+                                                    {...register(
+                                                        `stops.${index}.expectedArrivalTime`,
+                                                        {
+                                                            onChange: () => {
+                                                                trigger(`stops.${index}.expectedArrivalTime`);
+                                                            }
+                                                        }
+                                                    )}
                                                 />
 
                                                 {errors.stops?.[index]?.expectedArrivalTime && (
-                                                    <ErrorMessage
-                                                        message={errors.stops[index].expectedArrivalTime.message}
-                                                    />
+                                                    <ErrorMessage message={errors.stops[index].expectedArrivalTime.message} />
                                                 )}
 
                                             </div>
 
                                         </div>
-
                                     ))}
 
                                 </div>
@@ -507,14 +552,12 @@ const CreateSchedule = () => {
 
                         <div className="space-y-3">
 
-                            {/* All Days */}
-
                             <label className="flex items-center gap-3">
 
                                 <Input
                                     type="checkbox"
                                     checked={selectedDays.length === days.length}
-                                    onChange={handleAllDaysChange}
+                                    onChange={handleAllDayChange}
                                     className="!w-4 !h-4"
                                 />
 
@@ -523,8 +566,6 @@ const CreateSchedule = () => {
                                 </span>
 
                             </label>
-
-                            {/* Individual Days */}
 
                             <div className="grid grid-cols-3 gap-3">
 
@@ -570,8 +611,6 @@ const CreateSchedule = () => {
 
                         <div className="grid grid-cols-2 gap-6">
 
-                            {/* Departure Time */}
-
                             <div>
 
                                 <label
@@ -592,8 +631,6 @@ const CreateSchedule = () => {
                                 )}
 
                             </div>
-
-                            {/* Arrival Time */}
 
                             <div>
 
@@ -618,8 +655,6 @@ const CreateSchedule = () => {
 
                         </div>
 
-                        {/* Status */}
-
                         <div className="mt-5">
 
                             <label
@@ -629,10 +664,19 @@ const CreateSchedule = () => {
                                 Status
                             </label>
 
-                            <Select
-                                id="status"
-                                {...register("status")}
-                                options={statusOptions}
+                            <Controller
+                                name="status"
+                                control={control}
+                                defaultValue=""
+                                render={({ field }) => (
+                                    <Select
+                                        id="status"
+                                        name={field.name}
+                                        value={field.value || ""}
+                                        onChange={field.onChange}
+                                        options={statusOptions}
+                                    />
+                                )}
                             />
 
                             {errors.status && (
@@ -643,15 +687,15 @@ const CreateSchedule = () => {
 
                     </div>
 
-                    {/* Create Button */}
+                    {/* Update Button */}
 
                     <div className="pt-2">
 
                         <Button
                             type="submit"
-                            disabled={loading}
+                            disabled={updating}
                         >
-                            {loading ? "Creating..." : "Create Schedule"}
+                            {updating ? "Updating..." : "Update Schedule"}
                         </Button>
 
                     </div>
@@ -660,10 +704,11 @@ const CreateSchedule = () => {
 
             </div>
 
+
         </div>
 
     );
 
 };
 
-export default CreateSchedule;
+export default UpdateSchedule;
