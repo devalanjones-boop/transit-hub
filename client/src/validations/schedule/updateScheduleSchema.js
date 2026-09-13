@@ -3,7 +3,7 @@ import * as yup from "yup";
 
 
 
-const createScheduleSchema = yup.object({
+const updateScheduleSchema = yup.object({
 
     busId: yup
         .string()
@@ -66,4 +66,4 @@ const createScheduleSchema = yup.object({
 
 });
 
-export default createScheduleSchema;
+export default updateScheduleSchema;

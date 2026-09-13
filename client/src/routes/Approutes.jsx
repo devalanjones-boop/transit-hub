@@ -18,6 +18,7 @@ import UpdateStop from "../pages/admin/stops/UpdateStop";
 import ScheduleList from "../pages/admin/schedules/ScheduleList";
 import ScheduleDetails from "../pages/admin/schedules/ScheduleDetails";
 import CreateSchedule from "../pages/admin/schedules/CreateSchedule";
+import UpdateSchedule from "../pages/admin/schedules/UpdateSchedule";
 
 
 const AppRoutes = () => {
@@ -61,6 +62,8 @@ const AppRoutes = () => {
                 <Route path={"schedules/:id"} element={<ScheduleDetails />} />
 
                 <Route path={"schedules/create"} element={<CreateSchedule />} />
+
+                <Route path={"schedules/:id/edit"} element={<UpdateSchedule />} />
 
             </Route>
 

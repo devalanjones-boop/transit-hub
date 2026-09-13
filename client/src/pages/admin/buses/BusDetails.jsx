@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
+import EmptyState from "../../../components/common/EmptyState";
+import { getUpcomingSchedulesByBus } from "../../../services/scheduleService";
 
 
 const BusDetails = () => {
@@ -16,6 +18,35 @@ const BusDetails = () => {
     let [bus, setBus] = useState(null);
     let [loading, setLoading] = useState(true);
     let [error, setError] = useState("");
+    let [assignedSchedules, setAssignedSchedules] = useState([]);
+    let [scheduleLoading, setScheduleLoading] = useState(false);
+    let [scheduleError, setScheduleError] = useState("");
+
+
+    let fetchAssignedSchedules = async () => {
+
+        try {
+
+            setScheduleLoading(true);
+
+            setScheduleError("");
+
+            let response = await getUpcomingSchedulesByBus(id);
+
+            let schedules = response.data.data || [];
+
+            setAssignedSchedules(schedules.slice(0, 3));
+
+        } catch (error) {
+
+            setScheduleError(error.response?.data?.message || "Failed to get assigned schedule");
+
+        } finally {
+
+            setScheduleLoading(false);
+        }
+
+    }
 
 
     let fetchBus = async () => {
@@ -26,9 +57,21 @@ const BusDetails = () => {
 
             let response = await getBusById(id);
 
-            setBus(response.data.data);
+            let busData = response.data.data;
+
+            setBus(busData);
 
             setError("");
+
+            if (busData.status === "active") {
+
+                fetchAssignedSchedules();
+
+            } else {
+
+                setAssignedSchedules([]);
+
+            }
 
         } catch (error) {
 
@@ -187,9 +230,105 @@ const BusDetails = () => {
 
             </div>
 
+            {/* Assigned Schedules */}
+
+            <div className="mt-8">
+
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">
+
+                    Assigned Schedules
+
+                </h2>
+
+                {bus.status !== "active" && (
+
+                    <EmptyState
+                        message="This bus is inactive. No assigned schedules are available."
+                    />
+
+                )}
+
+                {bus.status === "active" && (
+
+                    <>
+
+                        {scheduleLoading && (
+
+                            <Loading message="Loading Assigned Schedule..." />
+
+                        )}
+
+                        {!scheduleLoading && scheduleError && (
+
+                            <ErrorMessage message={scheduleError} />
+
+                        )}
+
+                        {!scheduleLoading && !scheduleError && assignedSchedules.length === 0 && (
+
+                            <EmptyState
+                                message="No assigned schedules for this bus"
+                            />
+
+                        )}
+
+                        {!scheduleLoading && !scheduleError && assignedSchedules.length > 0 && (
+
+                            <div className="border border-gray-300 rounded-lg overflow-hidden">
+
+                                <div className="grid grid-cols-3 bg-gray-100 border-b border-gray-300">
+
+                                    <div className="p-4 font-semibold text-gray-800">
+                                        Route
+                                    </div>
+
+                                    <div className="p-4 font-semibold text-gray-800">
+                                        Departure
+                                    </div>
+
+                                    <div className="p-4 font-semibold text-gray-800">
+                                        Arrival
+                                    </div>
+
+                                </div>
+
+                                {assignedSchedules.map((schedule) => (
+
+                                    <div
+                                        key={schedule._id}
+                                        className="grid grid-cols-3 border-b border-gray-200 last:border-b-0"
+                                    >
+
+                                        <div className="p-4">
+                                            {schedule?.routeId?.routeName || "-"}
+                                        </div>
+
+                                        <div className="p-4">
+                                            {schedule.departureTime || "-"}
+                                        </div>
+
+                                        <div>
+                                            {schedule.arrivalTime || "-"}
+                                        </div>
+
+                                    </div>
+
+                                ))}
+
+                            </div>
+
+                        )}
+
+                    </>
+
+                )}
+
+            </div>
+
         </div>
 
-    )
+    );
 
-}
+};
+
 export default BusDetails;

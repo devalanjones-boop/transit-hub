@@ -32,6 +32,29 @@ const getScheduleById = async (id) => {
   return schedule;
 };
 
+const getUpcomingSchedulesByBus = async (busId) => {
+
+  const now = new Date();
+
+  const currentDay = now.toLocaleDateString("en-US", {
+    weekday: "long"
+  });
+
+  const currentTime = now.toTimeString().slice(0, 5);
+
+  const schedules = await Schedule.find({
+    busId,
+  })
+    .populate("routeId", "routeName startLocation endLocation")
+    .populate("stops.stopId", "stopName location")
+    .sort({
+      departureTime: 1
+    });
+
+  return schedules;
+
+};
+
 const updateSchedule = async (id, data) => {
   const updatedSchedule = await Schedule.findByIdAndUpdate(id, data, {
     returnDocument: "after",
@@ -63,6 +86,7 @@ module.exports = {
   createSchedule,
   getAllSchedules,
   getScheduleById,
+  getUpcomingSchedulesByBus,
   updateSchedule,
   deleteSchedule,
 };
