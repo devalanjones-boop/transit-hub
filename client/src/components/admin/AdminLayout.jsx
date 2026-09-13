@@ -22,7 +22,7 @@ const AdminLayout = () => {
                     setSidebarOpen={setSidebarOpen}
                 />
 
-                <main className="md:ml-64 pt-16 p-6">
+                <main className="md:ml-64 pt-1 p-1">
 
                     <Outlet />
 
