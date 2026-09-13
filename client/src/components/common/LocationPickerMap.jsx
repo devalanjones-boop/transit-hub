@@ -10,7 +10,6 @@ import {
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-// Fix for missing default marker icons in bundlers
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
@@ -22,7 +21,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-// Sub-component to pan map programmatically
 function MapController({ center }) {
   const map = useMap();
   useEffect(() => {
@@ -33,7 +31,6 @@ function MapController({ center }) {
   return null;
 }
 
-// Sub-component to capture clicks on the map
 function MapClickHandler({ onSelectLocation }) {
   useMapEvents({
     click(e) {
@@ -47,7 +44,6 @@ const LocationPickerMap = ({ latitude, longitude, onLocationChange }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searching, setSearching] = useState(false);
 
-  // Fallback center if coordinates aren't selected yet (e.g., city center)
   const currentCenter = useMemo(() => {
     if (typeof latitude === "number" && typeof longitude === "number") {
       return [latitude, longitude];
@@ -55,7 +51,6 @@ const LocationPickerMap = ({ latitude, longitude, onLocationChange }) => {
     return [28.6139, 77.209]; // Default coordinates (e.g. New Delhi)
   }, [latitude, longitude]);
 
-  // Reverse geocode lat/lng into a readable place name
   const fetchAddress = async (lat, lng) => {
     try {
       const res = await fetch(
@@ -79,7 +74,6 @@ const LocationPickerMap = ({ latitude, longitude, onLocationChange }) => {
     });
   };
 
-  // Search places via Nominatim Search API
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;

@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import Input from "../../../components/common/Input";
 import ErrorMessage from "../../../components/common/ErrorMessage";
 import Button from "../../../components/common/Button";
-import LocationPickerMap from "../../../components/common/LocationPickerMap"; // <-- Import the new map component
+import LocationPickerMap from "../../../components/common/LocationPickerMap"; 
 
 const CreateStop = () => {
   const navigate = useNavigate();
@@ -30,11 +30,9 @@ const CreateStop = () => {
 
   const [loading, setLoading] = useState(false);
 
-  // Watch current coordinates to sync the marker position
   const watchedLat = parseFloat(watch("latitude"));
   const watchedLng = parseFloat(watch("longitude"));
 
-  // Callback whenever user clicks, drags, or searches on the map
   const handleLocationSelected = ({ latitude, longitude, stopName }) => {
     setValue("latitude", latitude, { shouldValidate: true });
     setValue("longitude", longitude, { shouldValidate: true });
@@ -58,17 +56,14 @@ const CreateStop = () => {
 
   return (
     <div className="p-6">
-      {/* Back Button */}
       <div className="mb-6">
         <Button onClick={() => navigate("/admin/stops")}>← Back</Button>
       </div>
 
-      {/* Heading */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Create Stop</h1>
       </div>
 
-      {/* Form & Map Layout */}
       <div className="rounded-lg border border-gray-300 p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -130,7 +125,6 @@ const CreateStop = () => {
               </div>
             </div>
 
-            {/* Right Column: Interactive Map Picker */}
             <div>
               <label className="mb-2 block font-medium text-gray-700">
                 Locate on Map
