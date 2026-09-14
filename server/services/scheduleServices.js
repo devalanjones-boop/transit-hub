@@ -32,7 +32,7 @@ const getScheduleById = async (id) => {
   return schedule;
 };
 
-const getUpcomingSchedulesByBus = async (busId) => {
+const getAssignedSchedulesByBus = async (busId) => {
 
   const now = new Date();
 
@@ -47,6 +47,46 @@ const getUpcomingSchedulesByBus = async (busId) => {
   })
     .populate("routeId", "routeName startLocation endLocation")
     .populate("stops.stopId", "stopName location")
+    .sort({
+      departureTime: 1
+    });
+
+  return schedules;
+
+};
+
+const getSchedulesByRoute = async (routeId) => {
+
+  const schedules = await Schedule.find({
+    routeId
+  })
+    .populate({
+      path: "busId",
+      populate: {
+        path: "busType"
+      }
+    })
+    .populate("routeId")
+    .sort({
+      departureTime: 1
+    });
+
+  return schedules;
+};
+
+const getSchedulesByStop = async (stopId) => {
+
+  const schedules = await Schedule.find({
+    "stops.stopId": stopId
+  })
+    .populate({
+      path: "busId",
+      populate: {
+        path: "busType"
+      }
+    })
+    .populate("routeId")
+    .populate("stops.stopId")
     .sort({
       departureTime: 1
     });
@@ -86,7 +126,9 @@ module.exports = {
   createSchedule,
   getAllSchedules,
   getScheduleById,
-  getUpcomingSchedulesByBus,
+  getAssignedSchedulesByBus,
+  getSchedulesByRoute,
+  getSchedulesByStop,
   updateSchedule,
   deleteSchedule,
 };

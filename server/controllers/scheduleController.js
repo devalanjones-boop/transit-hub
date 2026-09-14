@@ -88,22 +88,88 @@ let deleteSchedule = async (req, res) => {
   }
 };
 
-let getUpcomingSchedulesByBus = async (req, res) => {
+let getAssignedSchedulesByBus = async (req, res) => {
 
   try {
 
     const { busId } = req.params;
 
-    const upcomingSchedules =
-      await scheduleService.getUpcomingSchedulesByBus(busId);
+    const assignedSchedules =
+      await scheduleService.getAssignedSchedulesByBus(busId);
 
     return res.status(200).json({
 
       success: true,
 
-      count: upcomingSchedules.length,
+      count: assignedSchedules.length,
 
-      data: upcomingSchedules,
+      data: assignedSchedules,
+
+    });
+
+  } catch (error) {
+
+    return res.status(500).json({
+
+      success: false,
+
+      message: error.message
+
+    });
+
+  }
+
+};
+
+let getSchedulesByRoute = async (req, res) => {
+
+  try {
+
+    const { routeId } = req.params;
+
+    const schedules =
+      await scheduleService.getSchedulesByRoute(routeId);
+
+    return res.status(200).json({
+
+      success: true,
+
+      count: schedules.length,
+
+      data: schedules
+
+    });
+
+  } catch (error) {
+
+    return res.status(500).json({
+
+      success: false,
+
+      message: error.message
+
+    });
+
+  }
+
+};
+
+let getSchedulesByStop = async (req, res) => {
+
+  try {
+
+    const { stopId } = req.params;
+
+    const schedules =
+      await scheduleService.getSchedulesByStop(stopId);
+
+    return res.status(200).json({
+
+      success: true,
+
+      count: schedules.length,
+
+      data: schedules
 
     });
 
@@ -127,5 +193,7 @@ module.exports = {
   getScheduleById,
   updateSchedule,
   deleteSchedule,
-  getUpcomingSchedulesByBus,
+  getAssignedSchedulesByBus,
+  getSchedulesByRoute,
+  getSchedulesByStop,
 };
