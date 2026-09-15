@@ -13,9 +13,8 @@ const stopScheduleSchema = new mongoose.Schema(
       required: [true, "Stop order sequence is required"],
     },
     expectedArrivalTime: {
-      type: String,
+      type: Date,
       required: [true, "Stop arrival time is required"],
-      match: [/^([01]\d|2[0-3]):([0-5]\d)$/, "Please use 24-hour HH:mm format"],
     },
   },
   { _id: false },
@@ -33,7 +32,6 @@ const scheduleSchema = new mongoose.Schema(
       ref: "Route",
       required: [true, "Route ID is required"],
     },
-    // Array of ordered stops for this schedule
     stops: {
       type: [stopScheduleSchema],
       validate: {
@@ -43,14 +41,12 @@ const scheduleSchema = new mongoose.Schema(
       },
     },
     arrivalTime: {
-      type: String,
+      type: Date,
       required: [true, "Arrival time is required"],
-      match: [/^([01]\d|2[0-3]):([0-5]\d)$/, "Please use 24-hour HH:mm format"],
     },
     departureTime: {
-      type: String,
+      type: Date,
       required: [true, "Departure time is required"],
-      match: [/^([01]\d|2[0-3]):([0-5]\d)$/, "Please use 24-hour HH:mm format"],
     },
     days: {
       type: [String],
@@ -81,7 +77,7 @@ const scheduleSchema = new mongoose.Schema(
 );
 
 scheduleSchema.index({ routeId: 1, days: 1 });
-scheduleSchema.index({ "stops.stopId": 1 }); // Index to quickly search schedules passing through a specific stop
+scheduleSchema.index({ "stops.stopId": 1 });
 scheduleSchema.index({ busId: 1, days: 1, departureTime: 1 });
 
 module.exports = mongoose.model("Schedule", scheduleSchema);
