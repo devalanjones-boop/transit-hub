@@ -5,9 +5,10 @@ const objectId = Joi.string()
   .length(24)
   .message("Invalid ObjectId format");
 
-const timeFormat = Joi.string()
-  .pattern(/^([01]\d|2[0-3]):([0-5]\d)$/)
-  .message("Time must be in 24-hour HH:mm format");
+const dateFormat = Joi.date().iso().messages({
+  "date.base": "Time must be a valid ISO date",
+  "date.format": "Time must be in ISO 8601 format",
+});
 
 const daysEnum = [
   "Monday",
@@ -29,13 +30,9 @@ const scheduleValidationSchema = Joi.object({
       Joi.object({
         stopId: objectId.required(),
         stopSequence: Joi.number().integer().min(1).required(),
-        expectedArrivalTime: Joi.string()
-          .pattern(/^([01]\d|2[0-3]):([0-5]\d)$/)
-          .required()
-          .messages({
-            "string.pattern.base": "Please use 24-hour HH:mm format",
-            "any.required": "Stop arrival time is required",
-          }),
+        expectedArrivalTime: dateFormat.required().messages({
+          "any.required": "Stop arrival time is required",
+        }),
       }),
     )
     .min(2)
@@ -44,8 +41,12 @@ const scheduleValidationSchema = Joi.object({
       "array.min":
         "A schedule must have at least an origin and a destination stop",
     }),
-  arrivalTime: timeFormat.required(),
-  departureTime: timeFormat.required(),
+  arrivalTime: dateFormat.required().messages({
+    "any.required": "Arrival time is required",
+  }),
+  departureTime: dateFormat.required().messages({
+    "any.required": "Departure time is required",
+  }),
   days: Joi.array()
     .items(Joi.string().valid(...daysEnum))
     .min(1)
@@ -64,18 +65,14 @@ const updateScheduleValidationSchema = Joi.object({
       Joi.object({
         stopId: objectId.required(),
         stopSequence: Joi.number().integer().min(1).required(),
-        expectedArrivalTime: Joi.string()
-          .pattern(/^([01]\d|2[0-3]):([0-5]\d)$/)
-          .required()
-          .messages({
-            "string.pattern.base": "Please use 24-hour HH:mm format",
-            "any.required": "Stop arrival time is required",
-          }),
+        expectedArrivalTime: dateFormat.required().messages({
+          "any.required": "Stop arrival time is required",
+        }),
       }),
     )
     .min(2),
-  arrivalTime: timeFormat,
-  departureTime: timeFormat,
+  arrivalTime: dateFormat,
+  departureTime: dateFormat,
   days: Joi.array()
     .items(Joi.string().valid(...daysEnum))
     .min(1)
