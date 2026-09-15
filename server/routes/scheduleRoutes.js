@@ -1,9 +1,11 @@
 const express = require("express");
 const { validateSchedule, validateUpdateSchedule } = require("../middleware/validateSchedule");
-const { createSchedule, getAllSchedules, getScheduleById, updateSchedule, deleteSchedule, getUpcomingSchedulesByBus } = require("../controllers/scheduleController");
+const { createSchedule, getAllSchedules, getScheduleById, updateSchedule, deleteSchedule, getAssignedSchedulesByBus, getSchedulesByRoute, getSchedulesByStop } = require("../controllers/scheduleController");
 const router = express.Router()
 
-router.get("/:busId/assigned-schedules", getUpcomingSchedulesByBus)
+router.get("/:busId/assigned-schedules", getAssignedSchedulesByBus);
+router.get("/route/:routeId/schedules", getSchedulesByRoute);
+router.get("/stop/:stopId/schedules", getSchedulesByStop);
 router.post("/", validateSchedule, createSchedule);
 router.get("/", getAllSchedules);
 router.get("/:id", getScheduleById);

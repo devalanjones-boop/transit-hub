@@ -7,6 +7,8 @@ import Swal from "sweetalert2";
 import { toast } from "sonner";
 import Button from "../../../components/common/Button";
 import StopMap from "../../../components/common/StopMap";
+import EmptyState from "../../../components/common/EmptyState";
+import { getSchedulesByStop } from "../../../services/scheduleService";
 
 
 
@@ -20,7 +22,34 @@ const StopDetails = () => {
     let [stop, setStop] = useState(null);
     let [loading, setLoading] = useState(true);
     let [error, setError] = useState("");
+    let [assignedSchedules, setAssignedSchedules] = useState([]);
+    let [scheduleLoading, setScheduleLoading] = useState(false);
+    let [scheduleError, setScheduleError] = useState("");
 
+    let fetchAssignedSchedules = async () => {
+
+        try {
+
+            setScheduleLoading(true);
+
+            setScheduleError("");
+
+            let response = await getSchedulesByStop(id);
+
+            let schedule = response.data.data || [];
+
+            setAssignedSchedules(schedule.slice(0, 3));
+
+        } catch (error) {
+
+            setScheduleError(error.response?.data?.message || "Failed to get assigned schedules");
+
+        } finally {
+
+            setScheduleLoading(false);
+        }
+
+    }
 
     let fetchStop = async () => {
 
@@ -33,6 +62,8 @@ const StopDetails = () => {
             let response = await getStopById(id);
 
             setStop(response.data.data);
+
+            fetchAssignedSchedules();
 
         } catch (error) {
 
@@ -202,6 +233,88 @@ const StopDetails = () => {
                     />
 
                 </div>
+
+            </div>
+
+            {/* Assigned Schedules */}
+
+            <div className="mt-8">
+
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                    Bus Schedules
+                </h2>
+
+                {scheduleLoading && (
+                    <Loading message="Loading Assigned Schedules..." />
+                )}
+
+                {!scheduleLoading && !scheduleError && assignedSchedules.length === 0 && (
+                    <EmptyState message="No buses are scheduled for this stop" />
+                )}
+
+                {!scheduleLoading && !scheduleError && assignedSchedules.length > 0 && (
+
+                    <div className="border border-gray-300 rounded-lg overflow-hidden">
+
+                        <div className="grid grid-cols-4 bg-gray-100 border-b border-gray-300">
+
+                            <div className="p-4 font-semibold text-gray-800">
+                                Bus Number
+                            </div>
+
+                            <div className="p-4 font-semibold text-gray-800">
+                                Bus Type
+                            </div>
+
+                            <div className="p-4 font-semibold text-gray-800">
+                                Route Name
+                            </div>
+
+                            <div className="p-4 font-semibold text-gray-800">
+                                Expected Arrival Time
+                            </div>
+
+                        </div>
+
+                        {assignedSchedules.map((schedule) => {
+
+                            let stopSchedule = schedule.stops.find(
+                                (stopSchedule) =>
+                                    stopSchedule.stopId?._id === id
+                            );
+
+                            return (
+
+                                <div
+                                    key={schedule._id}
+                                    className="grid grid-cols-4 border-b border-gray-200 last:border-b-0"
+                                >
+
+                                    <div className="p-4">
+                                        {schedule?.busId?.busRegNumber || "-"}
+                                    </div>
+
+                                    <div className="p-4">
+                                        {schedule?.busId?.busType?.busType || "-"}
+                                    </div>
+
+                                    <div className="p-4">
+                                        {schedule?.routeId?.routeName || "-"}
+                                    </div>
+
+                                    <div className="p-4">
+                                        {stopSchedule?.expectedArrivalTime || "-"}
+                                    </div>
+
+                                </div>
+
+                            );
+
+                        })}
+
+                    </div>
+
+                )}
 
             </div>
 

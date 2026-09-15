@@ -7,13 +7,13 @@
     "location",
     "tracking"
   ],
-  "homepage": "https://github.com/devalanjones-boop/transit-hub#readme",
+  "homepage": "https://github.com/devalanjones/transit-hub#readme",
   "bugs": {
-    "url": "https://github.com/devalanjones-boop/transit-hub/issues"
+    "url": "https://github.com/devalanjones/transit-hub/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/devalanjones-boop/transit-hub.git"
+    "url": "git+https://github.com/devalanjones/transit-hub.git"
   },
   "license": "ISC",
   "author": "Alan, Aswin",

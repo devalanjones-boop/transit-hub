@@ -7,7 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
 import EmptyState from "../../../components/common/EmptyState";
-import { getUpcomingSchedulesByBus } from "../../../services/scheduleService";
+import { getAssignedSchedulesByBus } from "../../../services/scheduleService";
 
 
 const BusDetails = () => {
@@ -31,7 +31,7 @@ const BusDetails = () => {
 
             setScheduleError("");
 
-            let response = await getUpcomingSchedulesByBus(id);
+            let response = await getAssignedSchedulesByBus(id);
 
             let schedules = response.data.data || [];
 
@@ -244,6 +244,7 @@ const BusDetails = () => {
 
                     <EmptyState
                         message="This bus is inactive. No assigned schedules are available."
+                        icon="🗓️"
                     />
 
                 )}
@@ -268,6 +269,7 @@ const BusDetails = () => {
 
                             <EmptyState
                                 message="No assigned schedules for this bus"
+                                icon="🗓️"
                             />
 
                         )}
@@ -307,7 +309,7 @@ const BusDetails = () => {
                                             {schedule.departureTime || "-"}
                                         </div>
 
-                                        <div>
+                                        <div className="p-4">
                                             {schedule.arrivalTime || "-"}
                                         </div>
 
